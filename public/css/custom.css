@@ -1,0 +1,97 @@
+/*.preloader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background-image: url('https://i.stack.imgur.com/MnyxU.gif');
+    background-repeat: no-repeat; 
+    background-color: #FFF;
+    background-position: center;
+ }*/
+ 
+ .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: none;
+    color: blue!important;
+    border-radius: 0px;
+    border: 1px solid #828282;
+  }
+  
+  .dataTables_wrapper .dataTables_paginate .paginate_button:active {
+    background: none;
+    color: blue!important;
+  }
+
+ /*.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background-color: #fff;
+  }
+  .preloader .loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    font: 14px arial;
+  }*/
+
+.ck-editor__editable,
+textarea {
+    min-height: 150px;
+}
+
+.datatable {
+    width: 100% !important;
+}
+
+.dataTables_length,
+.dataTables_filter,
+.dt-buttons {
+    margin-bottom: 0.333em;
+}
+
+.dt-buttons .btn {
+    margin-left: 0.333em;
+    border-radius: 0;
+}
+
+.table.datatable {
+    box-sizing: border-box;
+    border-collapse: collapse;
+}
+
+table.dataTable thead th {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.select2 {
+    max-width: 100%;
+    width: 100%;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    background-image: none;
+}
+
+.btn-group-xs > .btn,
+.btn-xs {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+.color-text{
+    color:white;
+}
