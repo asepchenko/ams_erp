@@ -44,6 +44,12 @@
                             <input type="text" name="kode" class="form-control" value="{{ $data->kode_departemen }}" readonly>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label for="doc_category" class="col-sm-2 col-form-label">Brand</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="doc_category" class="form-control" value="{{ $data->document_category }}" readonly>
+                        </div>
+                    </div>
 
                 </form>
             </div> <!-- col -->
@@ -56,6 +62,12 @@
                         <label for="ket" class="col-sm-2 col-form-label">Note</label>
                         <div class="col-sm-10">
                         <textarea name="ket" class="form-control" readonly>{{ $data->keterangan }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="split" class="col-sm-2 col-form-label">Open Budget</label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" name="split" id="split" {{ $budgetnya }} data-toggle="toggle" disabled="disabled">
                         </div>
                     </div>
                     @if ($data->last_status == "approval_tax" or $kode_dept == "TAX")
@@ -73,6 +85,7 @@
                         </div>
                     </div>
                     @endif
+                    
                     {{-- @if ($data->last_status == "approval_manager" or $data->last_status == "approval_accms" or $data->last_status == "approval_acc" or $data->last_status == "approval_aud")
                     <div class="form-group row">
                         <label for="nilai_anggaran" class="col-sm-2 col-form-label">Sisa Anggaran</label>

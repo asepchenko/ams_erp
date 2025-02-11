@@ -43,6 +43,7 @@ class DocumentController extends Controller
         } else {
             $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\',\'LL\',\'SKBDN\') order by priority_name');
         }
+        $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 order by 1");
 
 
         if ($request->ajax()) {
@@ -129,7 +130,7 @@ class DocumentController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('approval.document.index', compact('bulan', 'nik', 'name', 'data_prioritas', 'group', 'dept'));
+        return view('approval.document.index', compact('bulan', 'nik', 'name', 'data_prioritas', 'group', 'dept', 'data_brand'));
     }
 
     public function getproses()
@@ -168,12 +169,13 @@ else A.no_document end as no_document,
         $kode_anggaran = $request->kode_anggaran;
         $keterangan =  $request->keterangan;
         $split          = $request->split;
+        $doc_cat = $request->doc_category;
 
 
         try {
             //lepas remark before upload ops approval.dbo.sp_update_document  --ache
             //$temp = DB::select('approval.dbo.sp_update_document_dev \''.$id.'\',\''.auth()->user()->nik.'\',\''.$kode_anggaran.'\',\''.$keterangan.'\'');
-            $temp = DB::select('approval.dbo.sp_update_document_dev \'' . $id . '\',\'' . auth()->user()->nik . '\',\'' . $keterangan . '\',\'' . $split . '\'');
+            $temp = DB::select('approval.dbo.sp_update_document \'' . $id . '\',\'' . auth()->user()->nik . '\',\'' . $keterangan . '\',\'' . $split . '\',\'' . $doc_cat . '\'');
             $data = $temp[0];
             if ($data->hasil == "ok") {
                 return redirect('approval/document/' . $id . '/edit')->withSuccess('berhasil update document');
@@ -190,7 +192,7 @@ else A.no_document end as no_document,
     public function store(Request $request)
     {
         try {
-            $temp = DB::select('approval.dbo.sp_add_document \'' . auth()->user()->nik . '\',\'' . auth()->user()->name . '\',\'' . auth()->user()->kode_jabatan . '\',\'' . $request->keterangan . '\',' . $request->prioritas . ',\'' . $request->doc_type . '\'');
+            $temp = DB::select('approval.dbo.sp_add_document \'' . auth()->user()->nik . '\',\'' . auth()->user()->name . '\',\'' . auth()->user()->kode_jabatan . '\',\'' . $request->keterangan . '\',' . $request->prioritas . ',\'' . $request->doc_type . '\',\'' . $request->doc_category . '\'');
             $data = $temp[0];
             if ($data->hasil == "gagal") {
                 return response()->json(['errors' => 'gagal create document,pastikan semua notes sudah dibaca atau hubungi IT']);
@@ -215,7 +217,7 @@ else A.no_document end as no_document,
             $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
             case when A.no_document is null then A.id 
             else A.no_document end as no_document, 
-            A.created_at, A.created_by, B.priority_name
+            A.created_at, A.created_by, B.priority_name, A.document_category
             from approval.dbo.document_master A
             join approval.dbo.document_priority B on A.document_priority_id=B.id 
             where A.id=\'' . $id . '\'
@@ -224,7 +226,7 @@ else A.no_document end as no_document,
             $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
             case when A.no_document is null then A.id 
             else A.no_document end as no_document, 
-            A.created_at, A.created_by, B.priority_name
+            A.created_at, A.created_by, B.priority_name, A.document_category
             from approval.dbo.document_master A
             join approval.dbo.document_priority B on A.document_priority_id=B.id 
             where A.id=\'' . $id . '\'
@@ -233,7 +235,7 @@ else A.no_document end as no_document,
             $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
             case when A.no_document is null then A.id 
             else A.no_document end as no_document, 
-            A.created_at, A.created_by, B.priority_name
+            A.created_at, A.created_by, B.priority_name, A.document_category
             from approval.dbo.document_master A
             join approval.dbo.document_priority B on A.document_priority_id=B.id 
             where A.id=\'' . $id . '\'
@@ -242,7 +244,7 @@ else A.no_document end as no_document,
             $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
             case when A.no_document is null then A.id 
             else A.no_document end as no_document, 
-            A.created_at, A.created_by, B.priority_name
+            A.created_at, A.created_by, B.priority_name, A.document_category
             from approval.dbo.document_master A
             join approval.dbo.document_priority B on A.document_priority_id=B.id 
             where A.id=\'' . $id . '\'
@@ -299,7 +301,14 @@ else A.no_document end as no_document,
             $punya = "";
         }
 
-        return view('approval.document.proses', compact('data', 'nik', 'link_cetak', 'punya', 'kode_dept', 'data_ttd'));
+        if ($data_pu[0]->pu == "0") {
+            $budgetnya = "unchecked";
+        } else {
+            $budgetnya = "checked";
+        }
+
+
+        return view('approval.document.proses', compact('data', 'nik', 'link_cetak', 'punya', 'kode_dept', 'data_ttd', 'budgetnya'));
     }
 
     public function edit($id)
@@ -322,14 +331,15 @@ else A.no_document end as no_document,
         from approval.dbo.category_program where is_aktif = 1');
         $data_bank = DB::select('select kode_bank from dt_bank order by kode_bank');
         $data_matauang = DB::select('select currency_type from dt_currency where is_aktif=\'1\' order by currency_type');
+        $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 order by 1");
 
         if ($kode_dept == "FIN" and $status == "approval_fin") {
             $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, 
-            a.last_status, a.document_type
+            a.last_status, a.document_type, a.document_category
             from approval.dbo.document_master a where a.id=\'' . $id . '\' and a.last_status=\'approval_fin\'');
         } else {
             $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, 
-            a.last_status, a.document_type
+            a.last_status, a.document_type, a.document_category
             from approval.dbo.document_master a  where a.id=\'' . $id . '\' and a.nik=\'' . $nik . '\' and a.last_status=\'open\'');
         }
 
@@ -348,7 +358,7 @@ else A.no_document end as no_document,
             $alasan = $temp_alasan[0];
         }
 
-        return view('approval.document.edit', compact('data_category_kbt', 'data_category_program', 'data', 'nik', 'data_matauang', 'data_category_document', 'data_category_file', 'alasan', 'data_bank'));
+        return view('approval.document.edit', compact('data_brand', 'data_category_kbt', 'data_category_program', 'data', 'nik', 'data_matauang', 'data_category_document', 'data_category_file', 'alasan', 'data_bank'));
     }
 
     public function editDataDigital($id)

@@ -178,6 +178,17 @@
                     </div>
                 </div>
                 <div class="form-group row">
+                  <label for="doc_category" class="col-sm-4 col-form-label">Brand *</label>
+                    <div class="col-sm-8">
+                        <select name="doc_category" id="doc_category" class="form-control" required>
+                            <option value="">- Pilih -</option>
+                            @foreach($data_brand as $doc_cat)
+                                <option value="{{$doc_cat->kode_category}}">{{$doc_cat->kode_category}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
                   <label for="prioritas" class="col-sm-4 col-form-label">Prioritas *</label>
                     <div class="col-sm-8">
                         <select name="prioritas" id="prioritas" class="form-control" required>
@@ -274,6 +285,7 @@ $(document).ready(function(){
 
     $('#tambah').click(function(){
         $('#prioritas').val('');
+        $('#doc_category').val('');
         $('#keterangan').val('');
 		$('#form_result').html('');
 		$('#formModal').modal('show');
