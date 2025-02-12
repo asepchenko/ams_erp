@@ -178,6 +178,7 @@ else A.no_document end as no_document,
             $temp = DB::select('approval.dbo.sp_update_document \'' . $id . '\',\'' . auth()->user()->nik . '\',\'' . $keterangan . '\',\'' . $split . '\',\'' . $doc_cat . '\'');
             $data = $temp[0];
             if ($data->hasil == "ok") {
+                //test
                 return redirect('approval/document/' . $id . '/edit')->withSuccess('berhasil update document');
 
                 //return response()->json(['errors' => 'gagal update document']);
