@@ -292,6 +292,10 @@ else A.no_document end as no_document,
         $data_pu = DB::Select('select isnull(is_pu,\'0\') as pu from approval.dbo.document_digital 
         where document_id=\'' . $id . '\' and kode_category=\'VM\'');
 
+
+        $datasplit = DB::Select('select isnull(split_budget,\'0\') as split from approval.dbo.document_master 
+        where id=\'' . $id . '\'');
+
         if (count($data_pu) > 0) {
             if ($data_pu[0]->pu == "0") {
                 $punya = "unchecked";
@@ -302,7 +306,7 @@ else A.no_document end as no_document,
             $punya = "";
         }
 
-        if ($data_pu[0]->pu == "0") {
+        if ($datasplit[0]->split == "0") {
             $budgetnya = "unchecked";
         } else {
             $budgetnya = "checked";

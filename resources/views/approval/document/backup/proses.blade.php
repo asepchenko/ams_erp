@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Proses Document {{ $data->id }}</h1>
+                <h1 class="m-0 text-dark">Proses Document {{ $data->no_document }}</h1>
             </div><!-- /.col -->
         <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
@@ -33,11 +33,18 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="nama" class="col-sm-2 col-form-label">Nama</label>
+                        <div class="col-sm-10">
+                        <input type="text" name="nama" class="form-control" value="{{ $data->nama }}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="kode" class="col-sm-2 col-form-label">Kode</label>
                         <div class="col-sm-10">
                             <input type="text" name="kode" class="form-control" value="{{ $data->kode_departemen }}" readonly>
                         </div>
                     </div>
+
                 </form>
             </div> <!-- col -->
 
@@ -45,12 +52,6 @@
                 <form class="form-horizontal" id="formdocument" method="post">
                     @csrf
                     <input type="hidden" name="id" value="{{ $data->id }}"/>
-                    <div class="form-group row">
-                        <label for="nama" class="col-sm-2 col-form-label">Nama</label>
-                        <div class="col-sm-10">
-                        <input type="text" name="nama" class="form-control" value="{{ $data->nama }}" readonly>
-                        </div>
-                    </div>
                     <div class="form-group row">
                         <label for="ket" class="col-sm-2 col-form-label">Note</label>
                         <div class="col-sm-10">
@@ -72,6 +73,14 @@
                         </div>
                     </div>
                     @endif
+                    {{-- @if ($data->last_status == "approval_manager" or $data->last_status == "approval_accms" or $data->last_status == "approval_acc" or $data->last_status == "approval_aud")
+                    <div class="form-group row">
+                        <label for="nilai_anggaran" class="col-sm-2 col-form-label">Sisa Anggaran</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="nilai_anggaran" class="form-control" value="{{ $data->sisa_anggaran }}" readonly>
+                        </div>
+                    </div>
+                    @endif --}}
             </div> <!-- col -->
             
             </div> <!-- row -->
@@ -114,6 +123,35 @@
           </div>
         </div> <!-- card -->
 
+        @if ($data->last_status == "approval_manager" or $data->last_status == "approval_accms" or $data->last_status == "approval_acc" or $data->last_status == "approval_aud")
+        <!-- Tambahan Ache u/ List Referensi Kode Anggaran -->
+        <div class="card">
+            <div class="card-header">
+              <h5>List Kode Anggaran</h5>
+            </div>
+              <div class="card-body">
+                  <hr>
+                  <div class="table-responsive">
+                      <table id="data_anggaran" class="display compact" style="width:100%">
+                          <thead>
+                              <tr>
+                                  <th>Aksi</th>
+                                  <th>Kode Anggaran</th>
+                                  <th>Group</th>
+                                  <th>Deskripsi</th>
+                                  <th>Periode</th>
+                                  <th>Budget</th>
+                                  <th>Pemakaian (Rp)</th>  
+                                  <th>Sisa</th>                      
+                              </tr>
+                          </thead>
+                      </table>
+                  </div>
+              </div>
+  
+          </div> <!--end data anggaran-->
+          @endif
+
         <div class="card">
             <div class="card-header">
                 <h5>List File</h5>
@@ -135,6 +173,83 @@
             </div> <!-- card body -->
         </div><!-- card -->
 
+        @if ($data->document_type == 'kbt')
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>List File Kasbon</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                <table id="data_file_realisasi" class="display compact" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Nama File</th>
+                            <th>Keterangan</th>
+                            <th>Tanggal</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+                </div>
+            </div> <!-- card body -->
+        </div><!-- card -->
+            
+        @endif
+
+        <!-- Tambahan Ache u/ List Lampiran Program -->
+        <div class="card">
+          <div class="card-header">
+            <h5>List Data Program</h5>
+          </div>
+            <div class="card-body">
+                <hr>
+                <div class="table-responsive">
+                    <table id="data_program" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Aksi</th>
+                                <th>Category</th>
+                                <th>Nomor</th>
+                                <th>Supplier</th>
+                                <th>Keterangan</th>
+                                <th>Tgl Realisasi</th>
+                                <th>DPP</th>
+                                <th>Disc</th>
+                                <th>PPN</th>
+                                <th>Jumlah</th>                                
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div> <!--end data program-->
+{{-- 
+         <!-- Tambahan Ache u/ List Referensi Kode Anggaran -->
+         <div class="card">
+          <div class="card-header">
+            <h5>List Kode Anggaran</h5>
+          </div>
+            <div class="card-body">
+                <hr>
+                <div class="table-responsive">
+                    <table id="data_anggaran" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Aksi</th>
+                                <th>Kode Anggaran</th>
+                                <th>COA</th>
+                                <th>Deskripsi</th>
+                                <th>Saldo</th>
+                                <th>Request Pakai</th>                        
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div> <!--end data program--> --}}
+
         <div class="card">
             <div class="card-header">
                 <h5>History Status</h5>
@@ -155,6 +270,35 @@
             </div> <!-- card body -->
         </div><!-- card -->
   </div> <!-- col -->
+</div> <!-- row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table-bordered" style="width:100%">
+                    <tr>
+                    @foreach($data_ttd as $key => $ttd)
+                        <td align="center"><b>{{ $ttd->departemen ?? '' }}</b></td>
+                        @endforeach
+                        </tr>
+                        <tr>
+                        @foreach($data_ttd as $key => $ttd)
+                            <td align="center"><img src="{{ $ttd->signature}}" height="75" width="75"></td>
+                        @endforeach
+                        </tr>
+                        @foreach($data_ttd as $key => $ttd)
+                            <td align="center">{{ $ttd->tgl ?? '' }}</td>
+                        @endforeach
+                        </tr>
+                        <tr>
+                        @foreach($data_ttd as $key => $ttd)
+                            <td align="center"> {{ $ttd->nama ?? '' }}</td>
+                        @endforeach
+                        </tr>
+                </table>
+            </div>
+        </div> <!-- card -->
+    </div> <!-- col -->
 </div> <!-- row -->
 
 <!-- START MODAL FORM SUBMIT -->
@@ -225,6 +369,7 @@ $(document).ready(function(){
     });
 
     $("#btnUpdate").click(function(){
+            
             if(!confirm("Anda yakin ingin update dokumen ini?")){
                 event.preventDefault();
             }else{
@@ -276,52 +421,57 @@ $(document).ready(function(){
     });
 
     $("#btnApprove").click(function(){
-        if(!confirm("Anda yakin ingin approve dokumen ini?")){
+        if(signaturePad.isEmpty()){
+            alert("Tanda Tangan Harus diisi");
             event.preventDefault();
         }else{
-            event.preventDefault();
-            var spinner = $('#loader');
-            spinner.show();
-            var data = signaturePad.toDataURL('image/png');
-            $('#output').val(data);
-            disable_btn();
-            var form_data = new FormData();
-            var action_url = "{{ url('approval/document/approve') }}";
-            var result_msg = "Approve Data succesfully";
-            form_data.append('id', '{{ $data->id  }}');
-            form_data.append('signature', data);
-            form_data.append('notes', $('#alasan').val());
-            form_data.append('_token', '{{csrf_token()}}');
-                $.ajax({
-                    url: action_url,
-                    method:"POST",
-                    data:form_data,
-                    contentType: false,
-                    processData: false,
-                    success:function(data)
-                    {
-                        
-                        var html = '';
-                        if(data.errors){
+            if(!confirm("Anda yakin ingin approve dokumen ini?")){
+                event.preventDefault();
+            }else{
+                event.preventDefault();
+                var spinner = $('#loader');
+                spinner.show();
+                var data = signaturePad.toDataURL('image/png');
+                $('#output').val(data);
+                disable_btn();
+                var form_data = new FormData();
+                var action_url = "{{ url('approval/document/approve') }}";
+                var result_msg = "Approve Data succesfully";
+                form_data.append('id', '{{ $data->id  }}');
+                form_data.append('signature', data);
+                form_data.append('notes', $('#alasan').val());
+                form_data.append('_token', '{{csrf_token()}}');
+                    $.ajax({
+                        url: action_url,
+                        method:"POST",
+                        data:form_data,
+                        contentType: false,
+                        processData: false,
+                        success:function(data)
+                        {
+                            
+                            var html = '';
+                            if(data.errors){
+                                spinner.hide();
+                                alert(data.errors);
+                                enable_btn();
+                            }
+
+                            if(data.success){
+                                alert(data.success);
+                                //alert(result_msg);
+                                window.location.href = "{{ url('approval/document') }}";
+                            }
+                        },
+                        error: function(data){
+                            console.log(data.responseJSON);
+                            //alert(data);
                             spinner.hide();
-                            alert(data.errors);
+                            alert("gagal approve, hubungi IT");
                             enable_btn();
                         }
-
-                        if(data.success){
-                            alert(data.success);
-                            //alert(result_msg);
-                            window.location.href = "{{ url('approval/document') }}";
-                        }
-                    },
-                    error: function(data){
-                        console.log(data.responseJSON);
-                        //alert(data);
-                        spinner.hide();
-                        alert("gagal approve, hubungi IT");
-                        enable_btn();
-                    }
-                });
+                    });
+            }
         }
     });
 
@@ -456,6 +606,25 @@ $(document).ready(function(){
         ]
     });
 
+        $('#data_anggaran').DataTable({
+        paging: false,
+        //responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('approval/document/data-anggaran') }}"+'/'+'{{ $data->id }}',
+        columns: [
+            //{ data: 'id', name: 'id' },
+            { data: 'action', name: 'action', orderable: false },
+            { data: 'kode_anggaran', name: 'kode_anggaran' },
+            { data: 'kode_group', name: 'kode_group' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'periode', name: 'periode' },
+            { data: 'nilai_budget', name: 'nilai_budget' },
+            { data: 'jumlah', name: 'jumlah' },
+            { data: 'sisa', name: 'sisa' }
+        ]
+    });
+
     $('#data_file').DataTable({
         paging: false,
         processing: true,
@@ -468,6 +637,41 @@ $(document).ready(function(){
             { data: 'keterangan', name: 'keterangan' },
             { data: 'created_at', name: 'created_at' },
             { data: 'action', name: 'action', orderable: false }
+        ]
+    });
+    $('#data_file_realisasi').DataTable({
+        paging: false,
+        processing: true,
+        responsive: true,
+        serverSide: true,
+        ajax: "{{ url('approval/outstanding-kasbon/data-file-kb') }}"+'/'+'{{ $data->id }}',
+        columns: [
+            { data: 'category_name', name: 'category_name' },
+            { data: 'nama_file', name: 'nama_file' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'created_at', name: 'created_at' },
+            { data: 'action', name: 'action', orderable: false }
+        ]
+    });
+
+    $('#data_program').DataTable({
+        paging: false,
+        //responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('approval/document/data-program') }}"+'/'+'{{ $data->id }}',
+        columns: [
+            //{ data: 'id', name: 'id' },
+            { data: 'action', name: 'action', orderable: false },
+            { data: 'nama_category', name: 'nama_category' },
+            { data: 'no_referensi', name: 'no_referensi' },
+            { data: 'nama_supplier', name: 'nama_supplier' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'tgl_realisasi', name: 'tgl_realisasi' },
+            { data: 'dpp', name: 'dpp'},
+            { data: 'diskon', name: 'diskon'},
+            { data: 'ppn', name: 'ppn'},
+            { data: 'jumlah', name: 'jumlah'}
         ]
     });
 

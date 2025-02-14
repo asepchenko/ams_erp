@@ -24,7 +24,7 @@ class DocumentController extends Controller
         $group = auth()->user()->kode_group;
         if ($dept == 'FIN') {
             $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'DIR\',\'SKBDN\',\'DR\',\'OS\',\'COP\') order by priority_name');
-        } elseif ($dept == 'OPR') {
+        } elseif ($dept == 'OPR' or $dept == 'MR') {
             $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PB\',\'DIR\',\'SKBDN\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\') order by priority_name');
         } elseif ($dept == 'DIR') {
             $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PB\',\'PD\',\'SKBDN\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\') order by priority_name');
@@ -33,9 +33,15 @@ class DocumentController extends Controller
         } elseif ($dept == 'MDB') {
             $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PB\',\'PD\',\'DIR\',\'OS\',\'COP\') order by priority_name');
         } elseif ($dept == 'HRD') {
-            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'DR\',\'OS\',\'SKBDN\')  order by priority_name');
+            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'OS\',\'SKBDN\')  order by priority_name');
+        } elseif ($dept == 'PHRD') {
+            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'OS\',\'SKBDN\')  order by priority_name');
+        } elseif ($dept == 'IT') {
+            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 order by priority_name');
+        } elseif ($dept == 'MDR') {
+            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\',\'SKBDN\')  order by priority_name');
         } else {
-            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\') order by priority_name');
+            $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\',\'LL\',\'SKBDN\') order by priority_name');
         }
 
 
@@ -43,44 +49,56 @@ class DocumentController extends Controller
             if ($bulan == '') {
                 $where = '';
             } else {
-                $where = ' and month(A.tglbuat)=\'' . $bulan . '\'';
+                $where = 'and DATEDIFF(month, A.tglbuat, getdate()) = 0'; // ' and month(A.tglbuat)=\'' . $bulan . '\'';
             }
+            // and DATEDIFF(day,A.tanggal_bayar,getdate()) >= -7
             if ($dept == 'FIN') {
                 $data = DB::select('select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
-                where A.current_dept =\'FIN\' 
-                and DATEDIFF(day,A.tanggal_bayar,getdate()) >= -7
-                and A.document_type IN (\'doc\',\'kbt\',\'skbdn\')
-                and a.last_status not in (\'cancel\')  
+                where A.current_dept =\'FIN\'                 
+                and A.document_type != \'kbr\'
+                and a.last_status not in (\'cancel\',\'open\')  
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 union all
                 select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
                 where A.current_dept =\'FIN\' 
-                and A.document_type IN (\'doc\',\'kbt\',\'skbdn\')
+                and A.document_type != \'kbr\'
                 and a.last_status = \'open\'  
                 and A.current_jab like \'%' . $jab . '%\'
-                order by A.tglbuat asc');
+                order by A.tanggal_bayar asc');
             } elseif ($dept == 'ACCMS') {
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
                 where A.current_dept in(\'ACCMS\',\'ACC\')
-                and A.document_type in(\'doc\',\'kbt\',\'skbdn\')  
+                and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
             } elseif ($dept == 'MDMS' and $nik == '78100040') { //buat pak bismar
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
                 where A.current_dept in(\'ARTV\',\'MDMS\')
-                and A.document_type in(\'doc\',\'kbt\',\'skbdn\')  
+                and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
             } elseif ($dept == 'MDMS' and $nik == '00000005') { // buat bu neneng
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
                 where A.current_dept in(\'VM\',\'MDMS\')
-                and A.document_type in(\'doc\',\'kbt\',\'skbdn\')  
+                and A.document_type != \'kbr\' 
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'ANALIS-DC') { // buat bu neneng
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.current_dept in(\'ANALIS-DC\',\'IC\')
+                and A.document_type != \'kbr\'  
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'MDFOB') { // buat bu neneng
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.current_dept in(\'MDFOB\',\'MDP\')
+                and A.document_type != \'kbr\'  
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
             } else {
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A
-                where A.current_dept like (select Z.kode_departemen from users Z where Z.nik=\'' . $nik . '\')
-                and A.document_type in(\'doc\',\'kbt\',\'skbdn\')  
+                where A.current_dept = \'' . $dept . '\'
+                and A.document_type != \'kbr\'
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
             }
@@ -122,7 +140,9 @@ class DocumentController extends Controller
         $dept = auth()->user()->kode_departemen;
         $jab = auth()->user()->kode_jabatan;
         $dataproses = DB::select('
-        select A.id, A.nik, C.priority_name, A.nama, A.kode_departemen, A.current_jab, A.keterangan, A.last_status, A.no_document,
+        select A.id, A.nik, C.priority_name, A.nama, A.kode_departemen, A.current_jab, A.keterangan, A.last_status, 
+        case when A.no_document is null then A.id 
+else A.no_document end as no_document,
         format(A.created_at,\'dd-MMM-yyyy HH:mm\') as created_at, A.kode_anggaran,
         (select top 1 z.is_pu 
         from approval.dbo.document_digital z where z.document_id=A.id and z.kode_category=\'VM\') as is_pu,
@@ -147,12 +167,13 @@ class DocumentController extends Controller
         $id         = $request->id;
         $kode_anggaran = $request->kode_anggaran;
         $keterangan =  $request->keterangan;
+        $split          = $request->split;
 
 
         try {
             //lepas remark before upload ops approval.dbo.sp_update_document  --ache
             //$temp = DB::select('approval.dbo.sp_update_document_dev \''.$id.'\',\''.auth()->user()->nik.'\',\''.$kode_anggaran.'\',\''.$keterangan.'\'');
-            $temp = DB::select('approval.dbo.sp_update_document \'' . $id . '\',\'' . auth()->user()->nik . '\',\'' . $keterangan . '\'');
+            $temp = DB::select('approval.dbo.sp_update_document_dev \'' . $id . '\',\'' . auth()->user()->nik . '\',\'' . $keterangan . '\',\'' . $split . '\'');
             $data = $temp[0];
             if ($data->hasil == "ok") {
                 return redirect('approval/document/' . $id . '/edit')->withSuccess('berhasil update document');
@@ -174,7 +195,7 @@ class DocumentController extends Controller
             if ($data->hasil == "gagal") {
                 return response()->json(['errors' => 'gagal create document,pastikan semua notes sudah dibaca atau hubungi IT']);
             } else {
-                DB::rollback();
+                // DB::rollback();
                 return response()->json(['success' => $data->hasil]);
             }
         } catch (\Exception $e) {
@@ -190,27 +211,87 @@ class DocumentController extends Controller
         $kode_jabatan = auth()->user()->kode_jabatan;
         $link_cetak = "approval/report/" . $id . "/print";
         $kodedpt = substr(auth()->user()->kode_departemen, 0, 3);
+        if ($kode_dept == 'MDMS' and $nik == '78100040') {
+            $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
+            case when A.no_document is null then A.id 
+            else A.no_document end as no_document, 
+            A.created_at, A.created_by, B.priority_name
+            from approval.dbo.document_master A
+            join approval.dbo.document_priority B on A.document_priority_id=B.id 
+            where A.id=\'' . $id . '\'
+            and A.current_dept in(\'ARTV\',\'MDMS\')');
+        } elseif ($kode_dept == 'MDMS' and $nik == '00000005') {
+            $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
+            case when A.no_document is null then A.id 
+            else A.no_document end as no_document, 
+            A.created_at, A.created_by, B.priority_name
+            from approval.dbo.document_master A
+            join approval.dbo.document_priority B on A.document_priority_id=B.id 
+            where A.id=\'' . $id . '\'
+            and A.current_dept in(\'VM\',\'MDMS\')');
+        } elseif ($kode_dept == 'MDFOB') {
+            $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
+            case when A.no_document is null then A.id 
+            else A.no_document end as no_document, 
+            A.created_at, A.created_by, B.priority_name
+            from approval.dbo.document_master A
+            join approval.dbo.document_priority B on A.document_priority_id=B.id 
+            where A.id=\'' . $id . '\'
+            and A.current_dept in(\'MDFOB\',\'MDP\')');
+        } else {
+            $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status,
+            case when A.no_document is null then A.id 
+            else A.no_document end as no_document, 
+            A.created_at, A.created_by, B.priority_name
+            from approval.dbo.document_master A
+            join approval.dbo.document_priority B on A.document_priority_id=B.id 
+            where A.id=\'' . $id . '\'
+            and A.current_dept like \'%' . $kodedpt . '%\'');
+        }
 
-        $temp = DB::select('select A.id, A.nik, A.nama, A.kode_departemen, A.document_type, A.keterangan, A.last_status, 
-        A.created_at, A.created_by, B.priority_name, A.kode_anggaran, concat(d.kode_group, \' - \', d.keterangan) as desc_anggaran,
-        REPLACE(FORMAT(c.pemakaian, \'N\', \'en-us\'), \'.00\', \'\') as nilai_anggaran,
-        REPLACE(FORMAT(sisa_anggaran, \'N\', \'en-us\'), \'.00\', \'\') as sisa_anggaran
-        from approval.dbo.document_master A
-        join approval.dbo.document_priority B on A.document_priority_id=B.id 
-        left join 
-        approval.dbo.document_budget c on a.id = c.document_id 
-        left join budget.dbo.v_listbudget d on c.kode_anggaran = d.kode_anggaran
-        where A.id=\'' . $id . '\'
-        and A.current_dept like \'%' . $kodedpt . '%\'');
 
         if (count($temp) <= 0) {
             abort(403);
         }
-
         $data = $temp[0];
+
+        if ($data->kode_departemen == 'PRD' or $data->kode_departemen == 'KON') {
+            //(select concat(departemen,\' - \',jabatan) from users z where z.nik=a.updated_by) as jabatan, a.signature
+            $data_ttd =  DB::select('select acc.* from (
+            select top 1 a.id, a.status,format(a.updated_at,\'dd MMM yyyy \') as tgl,
+                        (select name from users z where z.nik=a.updated_by) as nama , 
+                        (select departemen from users z where z.nik=a.updated_by) as departemen, a.signature
+                        from approval.dbo.document_status a where a.document_id=\'' . $id . '\'  and a.status = \'open\'
+            union all
+            select a.id, a.status,format(a.updated_at,\'dd MMM yyyy \') as tgl,
+                        (select name from users z where z.nik=a.updated_by) as nama , 
+                        (select departemen from users z where z.nik=a.updated_by) as departemen, a.signature
+                        from approval.dbo.document_status a where a.document_id=\'' . $id . '\' 
+                        and a.status not in(\'cancel\',\'open\',\'approval_manager\') and a.alasan is null and a.signature is not null)
+            as acc order by acc.id asc');
+        } else {
+            //(select concat(departemen,\' - \',jabatan) from users z where z.nik=a.updated_by) as jabatan, a.signature
+            $data_ttd = DB::select('select acc.* from (
+            select top 1 a.id, a.status,format(a.updated_at,\'dd MMM yyyy \') as tgl,
+                        (select name from users z where z.nik=a.updated_by) as nama , 
+                        (select departemen from users z where z.nik=a.updated_by) as departemen, a.signature
+                        from approval.dbo.document_status a where a.document_id=\'' . $id . '\'  and a.status = \'open\'
+            union all
+            select a.id, a.status,format(a.updated_at,\'dd MMM yyyy \') as tgl,
+                        (select name from users z where z.nik=a.updated_by) as nama , 
+                        (select departemen from users z where z.nik=a.updated_by) as departemen, a.signature
+                        from approval.dbo.document_status a where a.document_id=\'' . $id . '\' 
+                        and a.status not in(\'cancel\',\'open\') and a.alasan is null and a.signature is not null)
+            as acc order by acc.id asc');
+        }
+
 
         $data_pu = DB::Select('select isnull(is_pu,\'0\') as pu from approval.dbo.document_digital 
         where document_id=\'' . $id . '\' and kode_category=\'VM\'');
+
+
+        $datasplit = DB::Select('select isnull(split_budget,\'0\') as split from approval.dbo.document_master 
+        where id=\'' . $id . '\'');
 
         if (count($data_pu) > 0) {
             if ($data_pu[0]->pu == "0") {
@@ -222,7 +303,13 @@ class DocumentController extends Controller
             $punya = "";
         }
 
-        return view('approval.document.proses', compact('data', 'nik', 'link_cetak', 'punya', 'kode_dept'));
+        if ($datasplit[0]->split == "0") {
+            $budgetnya = "unchecked";
+        } else {
+            $budgetnya = "checked";
+        }
+
+        return view('approval.document.proses', compact('data', 'nik', 'link_cetak', 'punya', 'kode_dept', 'data_ttd', 'budgetnya'));
     }
 
     public function edit($id)
@@ -247,17 +334,13 @@ class DocumentController extends Controller
         $data_matauang = DB::select('select currency_type from dt_currency where is_aktif=\'1\' order by currency_type');
 
         if ($kode_dept == "FIN" and $status == "approval_fin") {
-            $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, a.last_status, a.document_type, a.kode_anggaran, 
-            concat(c.coa,\' ( \',c.description,\' )\',\' - \',b.keterangan) desc_anggaran
-            from approval.dbo.document_master a left join 
-                        budget.dbo.tr_budget_request b on a.kode_anggaran = b.id 
-                        left join budget.dbo.tr_budget c on b.budget_id = c.budget_id where a.id=\'' . $id . '\' and a.last_status=\'approval_fin\'');
+            $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, 
+            a.last_status, a.document_type
+            from approval.dbo.document_master a where a.id=\'' . $id . '\' and a.last_status=\'approval_fin\'');
         } else {
-            $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, a.last_status, a.document_type, a.kode_anggaran, 
-            concat(c.coa,\' ( \',c.description,\' )\',\' - \',b.keterangan) desc_anggaran
-            from approval.dbo.document_master a left join 
-                        budget.dbo.tr_budget_request b on a.kode_anggaran = b.id 
-                        left join budget.dbo.tr_budget c on b.budget_id = c.budget_id where a.id=\'' . $id . '\' and a.nik=\'' . $nik . '\' and a.last_status=\'open\'');
+            $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, 
+            a.last_status, a.document_type
+            from approval.dbo.document_master a  where a.id=\'' . $id . '\' and a.nik=\'' . $nik . '\' and a.last_status=\'open\'');
         }
 
         if (count($temp) <= 0) {
@@ -446,13 +529,21 @@ class DocumentController extends Controller
         $kodegroup = $user[0]->kode_group;
         $where = "where  1=1 ";
         if ($kodegroup == 'ACC') {
-            $where .= 'and a.kode_group in (\'' . $kodegroup . '\',\'SCM\',\'MDB\',\'GA\',\'OPR\',\'AUDIT\',\'DIREKSI\',\'FINANCE\',\'MARCOMM\',\'TAX\',\'DGM\',\'HRD\',\'VM\',\'MARKETING\',\'IT\')';
-        } elseif ($kodegroup == 'GA') {
+            $where .= 'and a.kode_group in (\'' . $kodegroup . '\',\'CREATIVE\',\'BDV\',\'MD SCM\',\'MD FOB\',\'ARTV\',\'SCM\',\'MDB\',\'GA\',\'OPR\',\'AUDIT\',\'DIREKSI\',\'FINANCE\',\'MARCOMM\',\'TAX\',\'DGM\',\'HRD\',\'VM\',\'MARKETING\',\'IT\')';
+        } elseif ($kodegroup == 'GA' or $kodegroup == 'DIREKSI') {
             $where .= '';
-        } elseif ($kodegroup == 'HRD' or $kodegroup == 'HRDP') {
-            $where .= 'and a.kode_group in(\'HRD\',\'HRDP\')';
-        } elseif ($kodegroup == 'MARCOMM') {
-            $where .= ' and a.kode_group IN(\'MARCOMM\',\'CREATIVE\')';
+        } elseif ($kodegroup == 'ARTV') {
+            $where .= ' and a.kode_group IN(\'ARTV\',\'CR RC\',\'CR RCW\',\'CR RQ\',\'CR RM\',\'MARCOMM\', \'CREATIVE\')';
+        } elseif ($kodegroup == 'CR RC') {
+            $where .= ' and a.kode_group IN(\'CR RC\',\'CREATIVE\')';
+        } elseif ($kodegroup == 'CR RCW') {
+            $where .= ' and a.kode_group IN(\'CR RCW\',\'CREATIVE\')';
+        } elseif ($kodegroup == 'CR RQ') {
+            $where .= ' and a.kode_group IN(\'CR RQ\',\'CREATIVE\')';
+        } elseif ($kodegroup == 'CR RM') {
+            $where .= ' and a.kode_group IN(\'CR RM\',\'CREATIVE\')';
+        } elseif ($kodegroup == 'SCM') {
+            $where .= ' and a.kode_group IN(\'SCM\',\'MD FOB\')';
         } else {
             $where .= ' and a.kode_group = \'' . $kodegroup . '\'';
         }
@@ -581,9 +672,13 @@ class DocumentController extends Controller
         $response = array();
         foreach ($data as $po) {
             $response[] = array(
-                "value" => $po->no_po, "label" => $po->no_po,
-                "deskripsi" => $po->deskripsi, "jumlah" => $po->net_total, "nama_rek" => $po->Nama_Rekening1,
-                "no_rek" => $po->No_Rekening1, "keterangan" => $po->Keterangan
+                "value" => $po->no_po,
+                "label" => $po->no_po,
+                "deskripsi" => $po->deskripsi,
+                "jumlah" => $po->net_total,
+                "nama_rek" => $po->Nama_Rekening1,
+                "no_rek" => $po->No_Rekening1,
+                "keterangan" => $po->Keterangan
             );
         }
         return Response::json($response);
@@ -800,6 +895,7 @@ class DocumentController extends Controller
         //$kode_anggaran = $request->kode_anggaran;
 
         try {
+
             //cek apakah id kabontambahan
             $cek = DB::select('select document_type, last_status from approval.dbo.document_master where id =\'' . $id . '\'');
             // kalo kbr, cek dulu ada kbt yg statusnya blom closed?
@@ -850,6 +946,7 @@ class DocumentController extends Controller
         $nik            = auth()->user()->nik;
 
         try {
+
             $temp = DB::select('approval.dbo.sp_mass_approve_document \'' . $id . '\',\'' . $signature . '\',\'' . $nik . '\'');
             $data = $temp[0];
             if ($data->hasil == "ok") {
@@ -1240,7 +1337,7 @@ class DocumentController extends Controller
     public function saveFile(Request $request)
     {
         request()->validate([
-            'file'  => 'required|mimetypes:application/pdf,image/jpeg,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            'file'  => 'required|mimetypes:application/pdf,image/jpeg,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:2048',
         ]);
 
         $id             = $request->id;
@@ -1368,12 +1465,18 @@ class DocumentController extends Controller
 
     public function dataAnggaran($id)
     {
-        $data = DB::select('select a.kode_anggaran, a.id, a.document_id, a.coa, a.keterangan, b.last_status,
+        $data = DB::select('select a.kode_anggaran, c.kode_group, a.id, a.document_id, a.coa, c.keterangan, b.last_status,
         REPLACE(FORMAT(a.pemakaian, \'N\', \'en-us\'), \'.00\', \'\') as jumlah,
-        REPLACE(FORMAT(c.nilai_request - isnull(c.nilai_realisasi,0),\'N\', \'en-us\'), \'.00\',\'\') as sisa from approval.dbo.document_budget a         
+        REPLACE(FORMAT(isnull(c.sisa_anggaran,0),\'N\', \'en-us\'), \'.00\',\'\') as sisa,
+		REPLACE(FORMAT(isnull(c.nilai_budget,0),\'N\', \'en-us\'), \'.00\',\'\') as nilai_budget,
+		case 
+		when c.tahun = 2023 then concat(c.periode,\' - \',c.tahun)
+		else concat(c.bulanstr,\' - \',c.tahun) 
+		end as periode
+		from approval.dbo.document_budget a         
         join approval.dbo.document_master b on A.document_id=b.id
-		join BUDGET.dbo.tr_budget_request c on a.kode_anggaran = c.id
-        where a.document_id = \'' . $id . '\' order by a.created_at desc');
+		join BUDGET.dbo.v_listbudget c on a.kode_anggaran = c.kode_anggaran
+        where a.document_id = \'' . $id . '\' order by a.created_at asc');
 
         return DataTables::of($data)
             ->addColumn('action', function ($data) {
