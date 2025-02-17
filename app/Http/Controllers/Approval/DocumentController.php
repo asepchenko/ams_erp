@@ -274,18 +274,7 @@ else A.no_document end as no_document,
             as acc order by acc.id asc');
         } else {
             //(select concat(departemen,\' - \',jabatan) from users z where z.nik=a.updated_by) as jabatan, a.signature
-            $data_ttd = DB::select('select acc.* from (
-            select top 1 a.id, a.status,format(a.updated_at,\'dd MMM yyyy \') as tgl,
-                        (select name from users z where z.nik=a.updated_by) as nama , 
-                        (select departemen from users z where z.nik=a.updated_by) as departemen, a.signature
-                        from approval.dbo.document_status a where a.document_id=\'' . $id . '\'  and a.status = \'open\'
-            union all
-            select a.id, a.status,format(a.updated_at,\'dd MMM yyyy \') as tgl,
-                        (select name from users z where z.nik=a.updated_by) as nama , 
-                        (select departemen from users z where z.nik=a.updated_by) as departemen, a.signature
-                        from approval.dbo.document_status a where a.document_id=\'' . $id . '\' 
-                        and a.status not in(\'cancel\',\'open\') and a.alasan is null and a.signature is not null)
-            as acc order by acc.id asc');
+            $data_ttd = DB::select("select * from approval.dbo.getttd('" . $id . "') order by id asc");
         }
 
 
