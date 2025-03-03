@@ -72,14 +72,14 @@
                     </div>
                     @if ($data->last_status == "approval_tax" or $kode_dept == "TAX")
                     <div class="form-group row">
-                        <label for="pu" class="col-sm-2 col-form-label"></label>
+                        <label for="pu" class="col-sm-2 col-form-label">Cek Tax</label>
                         <div class="col-sm-10">
                             <input type="checkbox" name="pu" id="pu" {{ $punya }} data-toggle="toggle">
                         </div>
                     </div>
                     @else
                     <div class="form-group row">
-                        <label for="pu" class="col-sm-2 col-form-label"></label>
+                        <label for="pu" class="col-sm-2 col-form-label">Cek Tax</label>
                         <div class="col-sm-10">
                             <input type="checkbox" name="pu" id="pu" {{ $punya }} data-toggle="toggle" disabled="disabled">
                         </div>

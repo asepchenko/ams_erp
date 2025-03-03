@@ -72,15 +72,31 @@ class DocumentController extends Controller
                 and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
-            } elseif ($dept == 'MDMS' and $nik == '78100040') { //buat pak bismar
+            } elseif ($dept == 'CDBRAND' and $nik == '78100040') { //buat pak bismar  ARTV MDMS
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
-                where A.current_dept in(\'ARTV\',\'MDMS\')
+                where A.last_status = \'approval_cd_brand\'
+                and A.document_category in (\'HO\',\'RC\',\'RCW\')
                 and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
-            } elseif ($dept == 'MDMS' and $nik == '00000005') { // buat bu neneng
+            } elseif ($dept == 'CDBRAND' and $nik == '00000005') { // buat bu neneng  VM MDMS
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
-                where A.current_dept in(\'VM\',\'MDMS\')
+                where A.last_status = \'approval_cd_brand\'
+                and A.document_category in (\'HO\',\'RM\',\'RQ\')
+                and A.document_type != \'kbr\' 
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'GMBRAND' and $nik == '00002158') { //buat pak Baskoro
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.last_status = \'approval_gm_brand\'
+                and A.document_category in (\'HO\',\'RC\',\'RCW\')
+                and A.document_type != \'kbr\' 
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'GMBRAND' and $nik == '80002825') { // buat Pak Endo
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.last_status = \'approval_gm_brand\'
+                and A.document_category in (\'HO\',\'RM\',\'RQ\')
                 and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
