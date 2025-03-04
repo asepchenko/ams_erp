@@ -28,53 +28,60 @@
         </div>
         @endif
         <div class="card">
-        <div class="card-body">
-            <div class="row">
-            <div class="col-md-6">
-                <form class="form-horizontal">
-                    <div class="form-group row">
-                        <label for="nik" class="col-sm-2 col-form-label">NIK</label>
-                        <div class="col-sm-10">
-                            <input type="text" name="nik" class="form-control" value="{{ $data->nik }}" readonly>
+            <div class="card-body">
+                <div class="row">
+                <div class="col-md-6">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="nik" class="col-sm-2 col-form-label">NIK</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="nik" class="form-control" value="{{ $data->nik }}" readonly>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode" class="col-sm-2 col-form-label">Kode</label>
-                        <div class="col-sm-10">
-                            <input type="text" name="kode" class="form-control" value="{{ $data->kode_departemen }}" readonly>
+                        <div class="form-group row">
+                        <label for="nama" class="col-sm-2 col-form-label">Nama</label>
+                            <div class="col-sm-10">
+                            <input type="text" name="nama" class="form-control" value="{{ $data->nama }}" readonly>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </div> <!-- col -->
+                        <div class="form-group row">
+                            <label for="kode" class="col-sm-2 col-form-label">Kode</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="kode" class="form-control" value="{{ $data->kode_departemen }}" readonly>
+                            </div>
+                        </div>
+                    </form>
+                </div> <!-- col -->
 
-            <div class="col-md-6">
-                <form class="form-horizontal" id="formdocument" action="{{ route("approval.document.update", [$data->id]) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="id" value="{{ $data->id }}"/>
-                    <div class="form-group row">
-                    <label for="nama" class="col-sm-2 col-form-label">Nama</label>
-                        <div class="col-sm-10">
-                        <input type="text" name="nama" class="form-control" value="{{ $data->nama }}" readonly>
+                <div class="col-md-6">
+                    <form class="form-horizontal" id="formdocument" action="{{ route("approval.document.update", [$data->id]) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="id" value="{{ $data->id }}"/>
+                        <div class="form-group row">
+                        <label for="keterangan" class="col-sm-2 col-form-label">Note</label>
+                            <div class="col-sm-10">
+                            <textarea name="keterangan" class="form-control">{{ old('keterangan', isset($data) ? $data->keterangan : '') }}</textarea>
+                            </div>
+                        </div>                       
+                        <div class="form-group row">
+                            <label for="pu" class="col-sm-2 col-form-label">Open Budget</label>
+                            <div class="col-sm-10">
+                                <input type="checkbox" name="split" id="split" {{ $data->splitbudget }} data-toggle="toggle" {{ $data->last_status == 'open' ? '' : 'disabled' }}>
+                                <input type="hidden" name ="vsplit" id="vsplit" value={{ $data->splitbudget }}>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                    <label for="keterangan" class="col-sm-2 col-form-label">Note</label>
-                        <div class="col-sm-10">
-                        <textarea name="keterangan" class="form-control">{{ old('keterangan', isset($data) ? $data->keterangan : '') }}</textarea>
-                        </div>
-                    </div>
-            </div> <!-- col -->
-            
-            </div> <!-- row -->
-            <a class="btn btn-primary btn-sm" href="{{ route("approval.document.index") }}">List</a>
-            <span class="float-md-right">
-                <button type="submit" id="btnUpdate" name="btnUpdate" class="btn btn-danger btn-sm">Update</button>
-                <button type="button" id="btnCancel" name="btnCancel" class="btn btn-info btn-sm">Cancel</button>
-                <button type="button" id="btnProses" name="btnProses" class="btn btn-info btn-sm">Proses</button>
-            </span>
-            </form>
-        </div> <!-- card body -->
+                </div> <!-- col -->
+                
+                </div> <!-- row -->
+                <a class="btn btn-primary btn-sm" href="{{ route("approval.document.index") }}">List</a>
+                <span class="float-md-right">
+                    <button type="submit" id="btnUpdate" name="btnUpdate" class="btn btn-danger btn-sm">Update</button>
+                    <button type="button" id="btnCancel" name="btnCancel" class="btn btn-info btn-sm">Cancel</button>
+                    <button type="button" id="btnProses" name="btnProses" class="btn btn-info btn-sm">Proses</button>
+                </span>
+                </form>
+            </div> <!-- card body -->
         </div> <!-- card -->
 
         <div class="card">
@@ -107,28 +114,114 @@
             </div> <!-- table responsive -->
           </div>
         </div> <!-- card -->
+        
+        <!-- Tambahan Ache u/ List Referensi Kode Anggaran -->
+        <div class="card">
+            <div class="card-header">
+              <h5>List Kode Anggaran</h5>
+            </div>
+              <div class="card-body">
+                  <button type="button" id="btnAddAnggaran" class="btn btn-info btn-sm">Tambah</button>
+                  <hr>
+                  <div class="table-responsive">
+                      <table id="data_anggaran" class="display compact" style="width:100%">
+                          <thead>
+                              <tr>
+                                  <th>Aksi</th>
+                                  <th>Kode Anggaran</th>
+                                  <th>Group</th>
+                                  <th>Periode</th>
+                                  <th>Deskripsi</th>
+                                  <th>Budget</th>
+                                  <th>Pemakaian (Rp)</th>
+                                  <th>Sisa Budget</th>                        
+                              </tr>
+                          </thead>
+                      </table>
+                  </div>
+              </div>
+  
+          </div> <!--end data anggaran-->
 
         <div class="card">
           <div class="card-header">
             <h5>List File</h5>
-        </div>
-        <div class="card-body">
-          <button type="button" id="btnAddFile" class="btn btn-info btn-sm">Tambah</button>
-          <hr>
-          <div class="table-responsive">
-              <table id="data_file" class="display compact" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Aksi</th>
-                        <th>Category</th>
-                        <th>Nama File</th>
-                        <th>Keterangan</th>
-                        <th>Tanggal</th>
-                    </tr>
-                </thead>
-              </table>
           </div>
+            <div class="card-body">
+                <button type="button" id="btnAddFile" class="btn btn-info btn-sm">Tambah</button>
+                <hr>
+                <div class="table-responsive">
+                    <table id="data_file" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Aksi</th>
+                                <th>Category</th>
+                                <th>Nama File</th>
+                                <th>Keterangan</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
         </div>
+        @if ($data->document_type == 'kbt')
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>List File Kasbon</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                <table id="data_file_realisasi" class="display compact" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Nama File</th>
+                            <th>Keterangan</th>
+                            <th>Tanggal</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+                </div>
+            </div> <!-- card body -->
+        </div><!-- card -->
+            
+        @endif
+
+        <!-- Tambahan Ache u/ List Lampiran Program -->
+        <div class="card">
+          <div class="card-header">
+            <h5>List Data Program</h5>
+          </div>
+            <div class="card-body">
+                <button type="button" id="btnAddProgram" class="btn btn-info btn-sm">Tambah</button>
+                <hr>
+                <div class="table-responsive">
+                    <table id="data_program" class="display compact" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Aksi</th>
+                                <th>Category</th>
+                                <th>Nomor</th>
+                                <th>Supplier</th>
+                                <th>Keterangan</th>
+                                <th>Tgl Realisasi</th>
+                                <th>DPP</th>
+                                <th>Disc</th>
+                                <th>PPN</th>
+                                <th>Jumlah</th>     
+                                <th>Dibayar</th>                           
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        </div> <!--end data program-->
+
 
     </div>
 </div>
@@ -153,9 +246,15 @@
             <div class="col-sm-10">
               <select name="category_document" id="category_document" class="form-control" required>
                 <option value="">- Pilih -</option>
-                    @foreach($data_category_document as $data_doc)
-                        <option value="{{$data_doc->kode_category}}">{{$data_doc->nama_category}}</option>
-                    @endforeach
+                    @if ($data->document_type == 'kbt')
+                        @foreach($data_category_kbt as $data_doc)
+                            <option value="{{$data_doc->kode_category}}">{{$data_doc->nama_category}}</option>
+                        @endforeach
+                    @else
+                        @foreach($data_category_document as $data_doc)
+                                <option value="{{$data_doc->kode_category}}">{{$data_doc->nama_category}}</option>
+                            @endforeach
+                        @endif
               </select>
             </div>
           </div>
@@ -282,6 +381,162 @@
 </div>
 <!-- END MODAL FORM UPLOAD FILE -->
 
+<!-- START MODAL FORM DATA PROGRAM -->
+<div id="formmodalprogram" class="modalprogram modal fade" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Tambah/Edit Data Program</h5>
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+      	<span id="form_result_program"></span>
+      	<form method="post" id="formprogram" class="form-horizontal">
+          @csrf
+          <input type="hidden" name="document_id" id="document_id"  value="{{ $data->id }}"/>
+          <input type="hidden" name="id_program" id="id_program"/>
+          <input type="hidden" name="action_program" id="action_program"/>
+          <div class="form-group row">
+            <label for="category_program" class="col-sm-2 col-form-label">Kategori Program*</label>
+            <div class="col-sm-10">
+              <select name="category_program" id="category_program" class="form-control" required>
+                <option value="">- Pilih -</option>
+                    @foreach($data_category_program as $data_prog)
+                        <option value="{{$data_prog->kode_category}}">{{$data_prog->nama_category}}</option>
+                    @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="no_referensi" class="col-sm-2 col-form-label">No Referensi</label>
+                <div class="col-sm-10">
+                    <select class="form-control select2" style="width: 100%" name="no_referensi" id="no_referensi" data-dependent="no_referensi" readonly>
+                    </select>
+                </div>
+          </div>
+          <div class="form-group row">
+              <label for="nama_supplier" class="col-sm-2 col-form-label">Nama Supplier</label>
+              <div class="col-sm-10">
+                <input type="text" name="nama_supplier" id="nama_supplier" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+            <label for="keterangan" class="col-sm-2 col-form-label">Keterangan</label>
+            <div class="col-sm-10">
+                <textarea name="keterangan" id="keterangan" class="form-control" required></textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+              <label for="tgl_buat" class="col-sm-2 col-form-label">Tgl Buat</label>
+              <div class="col-sm-10">
+                <input type="text" name="tgl_buat" id="tgl_buat" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="tgl_realisasi" class="col-sm-2 col-form-label">Tgl Realisasi</label>
+              <div class="col-sm-10">
+                <input type="text" name="tgl_realisasi" id="tgl_realisasi" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="tgl_tempo" class="col-sm-2 col-form-label">Tgl Jatuh Tempo</label>
+              <div class="col-sm-10">
+                <input type="text" name="tgl_tempo" id="tgl_tempo" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="dpp" class="col-sm-2 col-form-label">DPP</label>
+              <div class="col-sm-10">
+                <input type="text" name="dpp" id="dpp" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="diskon" class="col-sm-2 col-form-label">Diskon</label>
+              <div class="col-sm-10">
+                <input type="text" name="diskon" id="diskon" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="ppn" class="col-sm-2 col-form-label">PPN</label>
+              <div class="col-sm-10">
+                <input type="text" name="ppn" id="ppn" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="total_tagihan" class="col-sm-2 col-form-label">Total Tagihan</label>
+              <div class="col-sm-10">
+                <input type="text" name="total_tagihan" id="total_tagihan" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="total_bayar" class="col-sm-2 col-form-label">Dibayar</label>
+              <div class="col-sm-10">
+                <input type="text" name="total_bayar" id="total_bayar" class="form-control">
+              </div>
+          </div>
+          <br />
+          <div class="modal-footer" align="center">
+            <button type="submit" name="btnSaveProgram" id="btnSaveProgram" onclick="save_program()" class="btn btn-info">Simpan</button>
+          </div>
+      	</form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END MODAL FORM DATA PROGRAM -->
+
+
+<!-- START MODAL FORM DATA ANGGARAN -->
+<div id="formmodalanggaran" class="modalanggaran modal fade" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Tambah/Edit Data Anggaran</h5>
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+      	<span id="form_result_anggaran"></span>
+      	<form method="post" id="formanggaran" class="form-horizontal">
+          @csrf
+          <input type="hidden" name="document_id" id="document_id"  value="{{ $data->id }}"/>
+          <input type="hidden" name="id_budget" id="id_budget"/>
+          <input type="hidden" name="action_anggaran" id="action_anggaran"/>
+          <div class="form-group row">
+            <label for="no_referensi" class="col-sm-2 col-form-label">Kode Anggaran</label>
+                <div class="col-sm-10">
+                    <select class="form-control select2" style="width: 100%" name="kode_anggaran" id="kode_anggaran" data-dependent="kode_anggaran" readonly>
+                    </select>
+                </div>
+          </div>
+          <div class="form-group row">
+              <label for="coa" class="col-sm-2 col-form-label">COA</label>
+              <div class="col-sm-10">
+                <input type="text" name="coa" id="coa" class="form-control" readonly>
+              </div>
+          </div>
+          <div class="form-group row">
+            <label for="desccoa" class="col-sm-2 col-form-label">Keterangan</label>
+            <div class="col-sm-10">
+                <input type="text" name="desccoa" id="desccoa" class="form-control" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+              <label for="jml_anggaran" class="col-sm-2 col-form-label">Jumlah</label>
+              <div class="col-sm-10">
+                <input type="text" name="jml_anggaran" id="jml_anggaran" class="form-control">
+              </div>
+          </div>
+          <br />
+          <div class="modal-footer" align="center">
+            <button type="submit" name="btnSaveAnggaran" id="btnSaveProgram" onclick="save_anggaran()" class="btn btn-info">Simpan</button>
+          </div>
+      	</form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END MODAL FORM DATA ANGGARAN -->
+
 <!-- START MODAL FORM SUBMIT -->
 <div id="formmodalsubmit" class="modal fade" role="dialog">
 	<div class="modal-dialog" role="document">
@@ -374,9 +629,29 @@
         //$('#action').val('add');
     }
 
+    function new_program(){
+        $('#action_program').val('add');
+    }
+
+    function new_anggaran(){
+        $('#action_anggaran').val('add');
+        $('#jml_anggaran').mask("#,##0.00", {reverse: true});
+    }
+
+    function clear_mask(){
+        $('#dpp').unmask("#.##0,00", {reverse: true});
+        $('#diskon').unmask("#.##0,00", {reverse: true});
+        $('#ppn').unmask("#.##0,00", {reverse: true});
+        $('#total_tagihan').unmask("#.##0,00", {reverse: true});
+        $('#total_bayar').unmask("#.##0,00", {reverse: true});
+    }
+
     function save_digital() {
         event.preventDefault();
-
+        if($("#category_document option:selected").val() == "VM" && $("#tanggal_bayar").val() == ""){
+            alert("isi tanggal bayar dulu!.");
+            return false;
+        }
         if($("#category_document option:selected").val() == ""){
             alert("Category Dokumen belum dpilih");
         }else{
@@ -519,6 +794,147 @@
 		});
     }
 
+    function save_program() {
+        event.preventDefault();
+
+        if($("#category_program option:selected").val() == ""){
+            alert("Category belum dpilih");
+        }else{
+            $("#btnSaveProgram").attr("disabled", true);
+            var form_data = new FormData();
+            var action_url = '';
+            var result_msg = '';
+            var spinner = $('#loader');
+            spinner.show();
+            if($('#action_program').val() == "add"){
+                action_url = "{{ url('approval/document/document-save-program') }}";
+                result_msg = "Insert Data succesfully";
+            }else if($('#action_program').val() == "edit"){
+                action_url = "{{ url('approval/document/document-update-program') }}";
+                result_msg = "Update Data succesfully";
+            }
+
+            if($('#action_program').val() == "edit"){
+                form_data.append('id',  $('#id_program').val());
+            }else{
+                form_data.append('id',  $('#document_id').val());
+            }
+            form_data.append('category_program',  $("#category_program option:selected").val());
+            form_data.append('no_referensi',  $("#no_referensi option:selected").val());
+            form_data.append('nama_supplier', $('#nama_supplier').val());
+            form_data.append('keterangan', $('#keterangan').val());
+            form_data.append('tgl_buat',  $('#tgl_buat').val());
+            form_data.append('tgl_realisasi',  $('#tgl_realisasi').val());
+            form_data.append('tgl_tempo',  $('#tgl_tempo').val());
+            form_data.append('dpp',  $('#dpp').val());
+            form_data.append('diskon', $('#diskon').val());
+            form_data.append('ppn', $('#ppn').val());
+            form_data.append('total_tagihan', $('#total_tagihan').val());
+            form_data.append('total_bayar', $('#total_bayar').val());
+            form_data.append('_token', '{{csrf_token()}}');
+            $.ajax({
+                url: action_url,
+                method:"POST",
+                data:form_data,
+                contentType: false,
+                processData: false,
+                success:function(data)
+                {
+                    $("#btnSaveProgram").attr("disabled", false);
+                    spinner.hide();
+                    var html = '';
+                    if(data.errors)
+                    {
+                        alert(data.errors);
+                    }
+                    if(data.success)
+                    {
+                        alert(result_msg);
+                        $('#data_program').DataTable().ajax.reload();
+                        $('#formmodalprogram').modal('hide');
+                        $('#data_digital').DataTable().ajax.reload();
+                        new_program();
+                    }
+                    $('#form_result_program').html(html);
+                },
+                error: function(data){
+                    $("#btnSaveProgram").attr("disabled", false);
+                    spinner.hide();
+                    var errors = data.responseJSON;
+                    alert("Ups terjadi kesalahan, silahkan coba lagi atau hubungi IT");
+                }
+            });
+        }
+    }
+
+    function save_anggaran() {
+        event.preventDefault();
+        if($("#kode_anggaran option:selected").val() == "" || $("#jml_anggaran").val() == ""){
+            alert("Kode Anggaran / Jumlahnya harus di isi.");
+            return false;
+        }
+        else{
+            $("#btnSaveAnggaran").attr("disabled", true);
+            var form_data = new FormData();
+            var action_url = '';
+            var result_msg = '';
+            var spinner = $('#loader');
+            spinner.show();
+            if($('#action_anggaran').val() == "add"){
+                action_url = "{{ url('approval/document/document-save-anggaran') }}";
+                result_msg = "Insert Data succesfully";
+            }else if($('#action_anggaran').val() == "edit"){
+                action_url = "{{ url('approval/document/document-update-anggaran') }}";
+                result_msg = "Update Data succesfully";
+            }
+
+            var temp_jum = $("#jml_anggaran").val().replace(/\,/g,'');
+            $("#jml_anggaran").val(temp_jum);
+
+            if($('#action_anggaran').val() == "edit"){
+                form_data.append('id',  $('#id_budget').val());
+            }else{
+                form_data.append('id',  $('#document_id').val());
+            }
+            form_data.append('kode_anggaran',  $("#kode_anggaran option:selected").val());
+            form_data.append('coa',  $('#coa').val());
+            form_data.append('desccoa',  $('#desccoa').val());
+            form_data.append('jml_anggaran',  $('#jml_anggaran').val());
+            form_data.append('_token', '{{csrf_token()}}');
+            $.ajax({
+                url: action_url,
+                method:"POST",
+                data:form_data,
+                contentType: false,
+                processData: false,
+                success:function(data)
+                {
+                    $("#btnSaveAnggaran").attr("disabled", false);
+                    spinner.hide();
+                    var html = '';
+                    if(data.errors)
+                    {
+                        alert(data.errors);
+                    }
+                    if(data.success)
+                    {
+                        alert(result_msg);
+                        $('#data_anggaran').DataTable().ajax.reload();
+                        $('#formmodalanggaran').modal('hide');
+                        new_anggaran();
+                    }
+                    $('#form_result_anggaran').html(html);
+                },
+                error: function(data){
+                    $("#btnSaveAnggaran").attr("disabled", false);
+                    spinner.hide();
+                    var errors = data.responseJSON;
+                    alert("Ups terjadi kesalahan, silahkan coba lagi atau hubungi IT");
+                }
+            });
+        }
+    }
+
     function readonly_select(objs, action) {
         if (action===true){
             objs.prepend('<div class="disabled-select"></div>');
@@ -530,6 +946,34 @@
 <script>
 $(document).ready(function(){
     var signaturePad = new SignaturePad(document.getElementById('signature-pad'));
+
+$('#split').bootstrapToggle({
+    on: 'Yes',
+    off: 'No'
+});
+var txtqc = document.getElementById("vsplit");
+var txtvalqc = txtqc.value;
+if (txtvalqc == 1){
+    $('#split').prop('checked', true).change()
+}else{
+    $('#split').prop('checked', false).change()
+}
+
+
+    $(document).on('hidden.bs.modal','.modalprogram',function(e){
+		$('#formprogram')[0].reset();
+        $('#no_referensi').empty();
+        $('#dpp').unmask("#.##0,00", {reverse: true});
+        $('#diskon').unmask("#.##0,00", {reverse: true});
+        $('#ppn').unmask("#.##0,00", {reverse: true});
+        $('#total_tagihan').unmask("#.##0,00", {reverse: true});
+	});
+
+    $(document).on('hidden.bs.modal','.modalanggaran',function(e){
+		$('#formanggaran')[0].reset();
+        $('#kode_anggaran').empty();
+        $('#jml_anggaran').unmask("#,##0.00", {reverse: true});
+	});
 
     $("#btnClear").click(function(){
         signaturePad.clear();
@@ -548,50 +992,55 @@ $(document).ready(function(){
     });
 
     $("#btnSubmit").click(function(){
-        if(!confirm("Anda yakin ingin submit dokumen ini?")){
+        if(signaturePad.isEmpty()){
+            alert("Tanda Tangan Harus diisi");
             event.preventDefault();
         }else{
-            event.preventDefault();
-            var spinner = $('#loader');
-            spinner.show();
-            var data = signaturePad.toDataURL('image/png');
-            $('#output').val(data);
-            $("#btnSubmit").attr("disabled", true);
-            var form_data = new FormData();
-            var action_url = "{{ url('approval/document/submit') }}";
-            var result_msg = "Submit Data succesfully";
-            form_data.append('id', '{{ $data->id  }}');
-            form_data.append('signature', data);
-            form_data.append('_token', '{{csrf_token()}}');
-                $.ajax({
-                    url: action_url,
-                    method:"POST",
-                    data:form_data,
-                    contentType: false,
-                    processData: false,
-                    success:function(data)
-                    {
-                        spinner.hide();
-                        var html = '';
-                        if(data.errors){
-                            alert(data.errors);
-                            $("#btnSubmit").attr("disabled", false);
-                        }
+            if(!confirm("Anda yakin ingin submit dokumen ini?")){
+                event.preventDefault();
+            }else{
+                event.preventDefault();
+                var spinner = $('#loader');
+                spinner.show();
+                var data = signaturePad.toDataURL('image/png');
+                $('#output').val(data);
+                $("#btnSubmit").attr("disabled", true);
+                var form_data = new FormData();
+                var action_url = "{{ url('approval/document/submit') }}";
+                var result_msg = "Submit Data succesfully";
+                form_data.append('id', '{{ $data->id  }}');
+                form_data.append('signature', data);
+                form_data.append('_token', '{{csrf_token()}}');
+                    $.ajax({
+                        url: action_url,
+                        method:"POST",
+                        data:form_data,
+                        contentType: false,
+                        processData: false,
+                        success:function(data)
+                        {
+                            spinner.hide();
+                            var html = '';
+                            if(data.errors){
+                                alert(data.errors);
+                                $("#btnSubmit").attr("disabled", false);
+                            }
 
-                        if(data.success){
-                            alert(data.success);
-                            //alert(result_msg);
-                            window.location.href = "{{ url('approval/document') }}";
+                            if(data.success){
+                                alert(data.success);
+                                //alert(result_msg);
+                                window.location.href = "{{ url('approval/document') }}";
+                            }
+                        },
+                        error: function(data){
+                            console.log(data.responseJSON);
+                            //alert(data);
+                            spinner.hide();
+                            $("#btnSubmit").attr("disabled", false);
+                            alert("gagal submit, hubungi IT");
                         }
-                    },
-                    error: function(data){
-                        console.log(data.responseJSON);
-                        //alert(data);
-                        spinner.hide();
-                        $("#btnSubmit").attr("disabled", false);
-                        alert("gagal submit, hubungi IT");
-                    }
-                });
+                    });
+            }
         }
     });
 
@@ -666,6 +1115,17 @@ $(document).ready(function(){
         $('#formuploadfile').modal('show');
     });
 
+    $("#btnAddProgram").on("click", function(){
+        new_program();
+        $('#formmodalprogram').modal('show');
+
+    });
+    $("#btnAddAnggaran").on("click", function(){
+        new_anggaran();
+        $('#formmodalanggaran').modal('show');
+
+    });
+
     $('#data_digital').DataTable({
         paging: false,
         //responsive: true,
@@ -714,7 +1174,8 @@ $(document).ready(function(){
                     $('#jumlah').prop('readonly',false);
 
                     $('#id_digital').val(data.success.id);
-                    $('#category_document').val(data.success.kode_category);
+                    $('#category_document').val(data.success.kode_category);   
+                    $('#category_document').attr('disabled',true);                 
                     $('#nama_tujuan').val(data.success.nama_tujuan);
                     $('#no_rek').val(data.success.rek_tujuan);
                     $('#tanggal_bayar').val(data.success.tanggal_bayar);
@@ -775,6 +1236,45 @@ $(document).ready(function(){
         }
     });
 
+    $(document).on('click', '.delete_anggaran', function(){
+        var id = $(this).attr('id');
+        var r = confirm("Are you sure want to delete this data : "+id+" ??");
+        if (r == true) {
+            delete_url = "{{ url('approval/document/delete-anggaran') }}";
+            event.preventDefault();
+            var spinner = $('#loader');
+            spinner.show();
+            var form_data = new FormData();
+            form_data.append('id', id);
+            form_data.append('_token', '{{csrf_token()}}');
+		    $.ajax({
+                url: delete_url,
+                method:"POST",
+                data:form_data,
+                contentType: false,
+                processData: false,
+                success:function(data)
+                {
+                    spinner.hide();
+                    if(data.success){
+                        alert("Delete Data "+id+", successfully");
+                        $('#data_anggaran').DataTable().ajax.reload();
+                        new_digital();
+                    }
+                },
+                error: function(data){
+                    spinner.hide();
+                    var errors = data.responseJSON;
+                    alert("gagal menghapus data");
+                    console.log(errors);
+                }
+            });
+        } else {
+            alert("Delete Canceled");
+        }
+    });
+
+
     $('#data_file').DataTable({
         paging: false,
         responsive: true,
@@ -789,6 +1289,22 @@ $(document).ready(function(){
             { data: 'created_at', name: 'created_at' }
         ]
     });
+
+    $('#data_file_realisasi').DataTable({
+        paging: false,
+        processing: true,
+        responsive: true,
+        serverSide: true,
+        ajax: "{{ url('approval/outstanding-kasbon/data-file-kb') }}"+'/'+'{{ $data->id }}',
+        columns: [
+            { data: 'category_name', name: 'category_name' },
+            { data: 'nama_file', name: 'nama_file' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'created_at', name: 'created_at' },
+            { data: 'action', name: 'action', orderable: false }
+        ]
+    });
+    
 
     $(document).on('click', '.delete_file', function(){
         var id = $(this).attr('id');
@@ -829,7 +1345,8 @@ $(document).ready(function(){
     });
 
     $('#nama_tujuan').select2({
-        placeholder: 'Search...',
+        placeholder: 'Search...',   
+        dropdownParent: $("#formmodaldigital"),
         tags: true,
         createTag: function (params) {
             return {
@@ -861,6 +1378,113 @@ $(document).ready(function(){
                 };
             }
         },
+    });
+
+    $('#no_referensi').select2({
+    placeholder: 'Ketik No PO / No Identitas Program',    
+    dropdownParent: $("#formmodalprogram"),
+    ajax: {
+        url:"{{url('approval/document/get-poprogram')}}",
+        type: 'post',
+        dataType: "json",
+        delay:250,
+        data: function(params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                kode: $('#category_program option:selected').val()
+            };
+            
+        },
+        processResults: function(data){
+            return {
+                results: $.map(data, function(item){
+                    return {
+                        text: item.nama_po,
+                        id: item.no_po
+                    }
+                })
+            };
+        }
+    },
+    });
+
+    $('#no_referensi').on('change',function(){
+        clear_mask();
+            if($(this).val() != ''){
+                $.getJSON('{{ url('approval/document/get-detilpo') }}' + "/" + $("#category_program option:selected").val() + "/" + $("#no_referensi option:selected").val(), 
+                function(data) {
+                    $('#nama_supplier').val(data[0].nama_supplier);
+                    $('#keterangan').val(data[0].keterangan);
+                    $('#tgl_buat').val(data[0].tgl_buat);
+                    $('#tgl_realisasi').val(data[0].tgl_realisasi);
+                    $('#tgl_tempo').val(data[0].tgl_tempo);
+                    $('#dpp').val(data[0].dpp).mask("#.##0,00", {reverse: true});
+                    $('#diskon').val(data[0].diskon).mask("#.##0,00", {reverse: true});
+                    $('#ppn').val(data[0].ppn).mask("#.##0,00", {reverse: true});
+                    $('#total_tagihan').val(data[0].jumlah).mask("#.##0,00", {reverse: true});
+                    $('#total_bayar').val(data[0].jumlah).mask("#.##0,00", {reverse: true});
+                });
+            }
+    });
+
+    $('#kode_anggaran').select2({
+    placeholder: 'Ketik Kode Anggaran',
+    dropdownParent: $("#formmodalanggaran"),
+    ajax: {
+        url:"{{url('approval/document/get-anggaran/')}}",
+        type: 'post',
+        dataType: "json",
+        delay:250,
+        data: function(params) {
+            return {
+                _token: "{{ csrf_token() }}",
+                search: params.term,
+                docid: {{ $data->id }}
+            };
+            
+        },
+        processResults: function(data){
+            return {
+                results: $.map(data, function(item){
+                    return {
+                        text: item.nama_anggaran,
+                        id: item.kode_anggaran
+                    }
+                })
+            };
+        }
+    },
+    });
+
+    $('#kode_anggaran').on('change',function(){
+        clear_mask();
+            if($(this).val() != ''){
+                $.getJSON('{{ url('approval/document/get-detilanggaran') }}' + "/" + $("#kode_anggaran option:selected").val(), 
+                function(data) {
+                    $('#coa').val(data[0].coa);
+                    $('#desccoa').val(data[0].keterangan);
+                });
+            }
+    });
+
+    $('#data_anggaran').DataTable({
+        paging: false,
+        //responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('approval/document/data-anggaran') }}"+'/'+'{{ $data->id }}',
+        columns: [
+            //{ data: 'id', name: 'id' },
+            { data: 'action', name: 'action', orderable: false },
+            { data: 'kode_anggaran', name: 'kode_anggaran' },
+            { data: 'kode_group', name: 'kode_group' },
+            { data: 'periode', name: 'periode' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'nilai_budget', name: 'nilai_budget' },
+            { data: 'jumlah', name: 'jumlah' },
+            { data: 'sisa', name: 'sisa' }
+        ]
     });
 
     $("#btnProsesCancel").click(function(){
@@ -912,6 +1536,152 @@ $(document).ready(function(){
                 });
             }
         }
+    });
+
+    $('#data_program').DataTable({
+        paging: false,
+        //responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('approval/document/data-program') }}"+'/'+'{{ $data->id }}',
+        columns: [
+            //{ data: 'id', name: 'id' },
+            { data: 'action', name: 'action', orderable: false },
+            { data: 'nama_category', name: 'nama_category' },
+            { data: 'no_referensi', name: 'no_referensi' },
+            { data: 'nama_supplier', name: 'nama_supplier' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'tgl_realisasi', name: 'tgl_realisasi' },
+            { data: 'dpp', name: 'dpp'},
+            { data: 'diskon', name: 'diskon'},
+            { data: 'ppn', name: 'ppn'},
+            { data: 'jumlah', name: 'jumlah'},
+            { data: 'bayar', name: 'bayar'}
+        ]
+    });
+
+    $(document).on('click', '.editprogram', function(){
+        var id_edit = $(this).attr('id');
+        var spinner = $('#loader');
+        var action_url = "{{ url('approval/document/edit-document-program') }}"+ "/" +id_edit;
+        spinner.show();
+		$.ajax({
+			url: action_url,
+            method:"GET",
+			success:function(data)
+			{
+                spinner.hide();
+				var html = '';
+				if(data.errors)
+				{
+					alert(data.errors);
+				}
+				if(data.success)
+				{
+                    console.log(data);
+                    var $optref = $("<option selected></option>").val(data.success.no_referensi).text(data.success.no_referensi);
+
+                    $('#id_program').val(data.success.id);
+                    $('#category_program').val(data.success.kode_category);
+                    $('#nama_supplier').val(data.success.nama_supplier);
+                    $('#no_referensi').append($optref).trigger("select");
+                    $('#tgl_buat').val(data.success.tgl_buat);
+                    $('#tgl_realisasi').val(data.success.tgl_realisasi);
+                    $('#tgl_tempo').val(data.success.tgl_tempo);
+                    $('#keterangan').val(data.success.keterangan);
+                    $('#dpp').val(data.success.dpp).mask("#.##0,00", {reverse: true});
+                    $('#diskon').val(data.success.diskon).mask("#.##0,00", {reverse: true});
+                    $('#ppn').val(data.success.ppn).mask("#.##0,00", {reverse: true});
+                    $('#total_tagihan').val(data.success.total_tagihan).mask("#.##0,00", {reverse: true});
+                    $('#total_bayar').val(data.success.total_bayar).mask("#.##0,00", {reverse: true});
+                    $('#action_program').val('edit');
+                    $('#formmodalprogram').modal('show');
+				}
+            },
+            error: function(data){
+                spinner.hide();
+                var errors = data.responseJSON;
+                alert(data);
+                console.log(errors);
+            }
+		});
+    });
+
+    $(document).on('click', '.delete_program', function(){
+        var id = $(this).attr('id');
+        var r = confirm("Are you sure want to delete this data : "+id+" ??");
+        if (r == true) {
+            delete_url = "{{ url('approval/document/delete-program') }}";
+            event.preventDefault();
+            var spinner = $('#loader');
+            spinner.show();
+            var form_data = new FormData();
+            form_data.append('id', id);
+            form_data.append('_token', '{{csrf_token()}}');
+		    $.ajax({
+                url: delete_url,
+                method:"POST",
+                data:form_data,
+                contentType: false,
+                processData: false,
+                success:function(data)
+                {
+                    spinner.hide();
+                    if(data.success){
+                        alert("Delete Data "+id+", successfully");
+                        $('#data_program').DataTable().ajax.reload();
+                        new_program();
+                    }
+                },
+                error: function(data){
+                    spinner.hide();
+                    var errors = data.responseJSON;
+                    alert("gagal menghapus data");
+                    console.log(errors);
+                }
+            });
+        } else {
+            alert("Delete Canceled");
+        }
+    });
+
+    $(document).on('click', '.editanggaran', function(){
+        var id_edit = $(this).attr('id');
+        var spinner = $('#loader');
+        var action_url = "{{ url('approval/document/edit-document-anggaran') }}"+ "/" +id_edit;
+        spinner.show();
+		$.ajax({
+			url: action_url,
+            method:"GET",
+			success:function(data)
+			{
+                spinner.hide();
+				var html = '';
+				if(data.errors)
+				{
+					alert(data.errors);
+				}
+				if(data.success)
+				{
+                    console.log(data);
+                    var $optanggaran = $("<option selected></option>").val(data.success.kode_anggaran).text(data.success.desc_anggaran);
+
+                    $('#id_budget').val(data.success.id);
+                    $('#coa').val(data.success.coa);
+                    $('#desccoa').val(data.success.keterangan);
+                    $('#kode_anggaran').append($optanggaran).trigger("select");
+                    $('#jml_anggaran').val(data.success.jumlah).mask("#,##0.00", {reverse: true});
+                    $('#action_anggaran').val('edit');
+                    $('#formmodalanggaran').modal('show');
+				}
+            },
+            error: function(data){
+                spinner.hide();
+                var errors = data.responseJSON;
+                alert(data);
+                console.log(errors);
+            }
+		});
     });
 });
 </script>

@@ -43,8 +43,13 @@ class DocumentController extends Controller
         } else {
             $data_prioritas = DB::select('select id, priority_name from approval.dbo.document_priority where is_active=1 and priority_name not in (\'PD\',\'PB\',\'DIR\',\'PINJAMAN\',\'DR\',\'OS\',\'COP\',\'LL\',\'SKBDN\') order by priority_name');
         }
+        // if ($dept == 'ARTV' or $dept == 'MDR' or $dept == 'MR' or $dept == 'VM' or $dept == 'BDV') {
+        //     $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 and kode_category != 'HO' order by 1");
+        // } else if ($dept == 'IT' or $dept == 'TAX' or $dept == 'FIN' or $dept == 'AUD') {
+        //     $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 and kode_category = 'HO' order by 1");
+        // } else {
         $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 order by 1");
-
+        // }
 
         if ($request->ajax()) {
             if ($bulan == '') {
@@ -186,6 +191,7 @@ else A.no_document end as no_document,
         $keterangan =  $request->keterangan;
         $split          = $request->split;
         $doc_cat = $request->doc_category;
+        // dd($split);
 
 
         try {
@@ -341,7 +347,13 @@ else A.no_document end as no_document,
         from approval.dbo.category_program where is_aktif = 1');
         $data_bank = DB::select('select kode_bank from dt_bank order by kode_bank');
         $data_matauang = DB::select('select currency_type from dt_currency where is_aktif=\'1\' order by currency_type');
+        // if ($kode_dept == 'ARTV' or $kode_dept == 'MDR' or $kode_dept == 'MR' or $kode_dept == 'VM' or $kode_dept == 'BDV') {
+        //     $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 and kode_category != 'HO' order by 1");
+        // } else if ($kode_dept == 'IT' or $kode_dept == 'TAX' or $kode_dept == 'FIN' or $kode_dept == 'AUD') {
+        //     $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 and kode_category = 'HO' order by 1");
+        // } else {
         $data_brand = DB::select("select kode_category from approval.dbo.document_category where is_aktif = 1 order by 1");
+        // }
 
         if ($kode_dept == "FIN" and $status == "approval_fin") {
             $temp = DB::select('select a.id, a.nik, a.nama, a.kode_departemen, a.keterangan, isnull(split_budget,0) as splitbudget, 
@@ -987,13 +999,14 @@ else A.no_document end as no_document,
             $data = $temp[0];
             if ($data->hasil == "ok") {
                 //kirim e-mail reject
-                $hasil_email = $this->rejectMail($id);
+                return response()->json(['success' => "Berhasil reject"]);
+                // $hasil_email = $this->rejectMail($id);
 
-                if ($hasil_email == "ok") {
-                    return response()->json(['success' => "Berhasil reject dan mengirim email"]);
-                } else {
-                    return response()->json(['success' => "Berhasil reject tapi gagal mengirim email -> " . $hasil_email]);
-                }
+                // if ($hasil_email == "ok") {
+                //     return response()->json(['success' => "Berhasil reject dan mengirim email"]);
+                // } else {
+                //     return response()->json(['success' => "Berhasil reject tapi gagal mengirim email -> " . $hasil_email]);
+                // }
             } else {
                 return response()->json(['errors' => $data->hasil]);
             }
@@ -1013,13 +1026,14 @@ else A.no_document end as no_document,
             $data = $temp[0];
             if ($data->hasil == "ok") {
                 //kirim e-mail cancel
-                $hasil_email = $this->cancelMail($id);
+                return response()->json(['success' => "Berhasil cancel"]);
+                // $hasil_email = $this->cancelMail($id);
 
-                if ($hasil_email == "ok") {
-                    return response()->json(['success' => "Berhasil cancel dan mengirim email"]);
-                } else {
-                    return response()->json(['success' => "Berhasil cancel tapi gagal mengirim email -> " . $hasil_email]);
-                }
+                // if ($hasil_email == "ok") {
+                //     return response()->json(['success' => "Berhasil cancel dan mengirim email"]);
+                // } else {
+                //     return response()->json(['success' => "Berhasil cancel tapi gagal mengirim email -> " . $hasil_email]);
+                // }
             } else {
                 return response()->json(['errors' => $data->hasil]);
             }

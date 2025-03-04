@@ -31,9 +31,7 @@
             <div class="card-body">
                 <div class="row">
                 <div class="col-md-6">
-                    <form class="form-horizontal" id="formdocument" action="{{ route("approval.document.update", [$data->id]) }}" method="POST">
-                        @csrf
-                        @method('PUT')
+                    <form class="form-horizontal">
                         <div class="form-group row">
                             <label for="nik" class="col-sm-2 col-form-label">NIK</label>
                             <div class="col-sm-10">
@@ -52,6 +50,14 @@
                                 <input type="text" name="kode" class="form-control" value="{{ $data->kode_departemen }}" readonly>
                             </div>
                         </div>
+                    </form>
+                </div> <!-- col -->
+
+                <div class="col-md-6">
+                    <form class="form-horizontal" id="formdocument" action="{{ route("approval.document.update", [$data->id]) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="id" value="{{ $data->id }}"/>
                         <div class="form-group row">
                             <label for="doc_category" class="col-sm-2 col-form-label">Brand</label>
                             <div class="col-sm-10">
@@ -63,11 +69,6 @@
                                 </select>
                             </div>
                         </div>
-                </div> <!-- col -->
-
-                <div class="col-md-6">
-                    
-                        <input type="hidden" name="id" id="id" value="{{ $data->id }}"/>
                         <div class="form-group row">
                         <label for="keterangan" class="col-sm-2 col-form-label">Note</label>
                             <div class="col-sm-10">
