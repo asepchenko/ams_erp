@@ -972,14 +972,15 @@ else A.no_document end as no_document,
             $temp = DB::select('approval.dbo.sp_mass_approve_document \'' . $id . '\',\'' . $signature . '\',\'' . $nik . '\'');
             $data = $temp[0];
             if ($data->hasil == "ok") {
+                return response()->json(['success' => "Berhasil mass approve dan mengirim email"]);
                 //kirim e-mail approve
-                $hasil_email = $this->approveMail($id);
+                // $hasil_email = $this->approveMail($id);
 
-                if ($hasil_email == "ok") {
-                    return response()->json(['success' => "Berhasil mass approve dan mengirim email"]);
-                } else {
-                    return response()->json(['success' => "Berhasil mas  approve tapi gagal mengirim email -> " . $hasil_email]);
-                }
+                // if ($hasil_email == "ok") {
+                //     return response()->json(['success' => "Berhasil mass approve dan mengirim email"]);
+                // } else {
+                //     return response()->json(['success' => "Berhasil mas  approve tapi gagal mengirim email -> " . $hasil_email]);
+                // }
             } else {
                 return response()->json(['errors' => $data->hasil]);
             }
