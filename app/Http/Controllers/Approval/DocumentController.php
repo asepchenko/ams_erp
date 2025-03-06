@@ -111,10 +111,26 @@ class DocumentController extends Controller
                 and A.document_type != \'kbr\'  
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
-            } elseif ($dept == 'MDFOB') { // buat bu neneng
+            } elseif ($dept == 'MDFOB') { // Saras
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
                 where A.current_dept in(\'MDFOB\',\'MDP\')
                 and A.document_type != \'kbr\'  
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'DM' and $nik == '80003913') { // NAHOT
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.last_status = \'approval_spv\'
+                and A.current_dept = \'DM\'
+                and A.document_category in (\'HO\',\'RC\',\'RCW\')
+                and A.document_type != \'kbr\' 
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'DM' and $nik == '80003941') { // BANDRI
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.last_status = \'approval_spv\'
+                and A.current_dept = \'DM\'
+                and A.document_category in (\'RQ\',\'RM\')
+                and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
             } else {
