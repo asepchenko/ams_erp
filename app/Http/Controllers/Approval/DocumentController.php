@@ -133,6 +133,20 @@ class DocumentController extends Controller
                 and A.document_type != \'kbr\' 
                 and A.current_jab like \'%' . $jab . '%\'' . $where . '
                 order by A.tglbuat asc');
+            } elseif ($dept == 'SMBRAND' and $nik == '00002437') { //buat pak David
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.last_status = \'approval_sm_brand\'
+                and A.document_category in (\'RCW\')
+                and A.document_type != \'kbr\' 
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
+            } elseif ($dept == 'SMBRAND' and $nik == '00001277') { //buat pak Taufik
+                $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A 
+                where A.last_status = \'approval_sm_brand\'
+                and A.document_category in (\'RQ\')
+                and A.document_type != \'kbr\' 
+                and A.current_jab like \'%' . $jab . '%\'' . $where . '
+                order by A.tglbuat asc');
             } else {
                 $data = DB::select(' select A.*, format(A.tanggal_bayar,\'dd-MMM-yyyy\') as tglbayar from Approval.dbo.v_documentindex A
                 where A.current_dept = \'' . $dept . '\'
