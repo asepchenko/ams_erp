@@ -96,14 +96,14 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            {{-- <li class="nav-item">
+                            <li class="nav-item">
                                 <a href="{{ route("budget.reportanggaran.index") }}" class="nav-link">
                                 <i class="nav-icon fas fa-list-alt"></i>
                                 <p>
-                                    Tahunan
+                                    Anggaran List
                                 </p>
                                 </a>
-                            </li> --}}
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ route("budget.reportrealisasi.index") }}" class="nav-link">
                                 <i class="nav-icon fas fa-list-alt"></i>
