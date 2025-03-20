@@ -114,8 +114,8 @@
                                 @foreach($datanya as $key => $data)
                                     <tr>
                                         <td> {{ $data->kode_group }}</td>
-                                        <td> {{ $data->tahun }}</td>
-                                        <td> {{ $data->descanggaran }}</td>
+                                        <td> {{ $data->year }}</td>
+                                        <td> {{ $data->description }}</td>
                                         <td> {{ number_format($data->January,0) }}</td>
                                         <td> {{ number_format($data->February,0) }}</td>
                                         <td> {{ number_format($data->March,0) }}</td>

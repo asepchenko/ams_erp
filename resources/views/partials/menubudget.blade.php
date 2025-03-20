@@ -18,7 +18,16 @@
                     <a href="{{ route("budget.dashboard2024.index") }}" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>
-                        Dashboard
+                        Dashboard Realisasi
+                    </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {{-- <a href="{{ route("budget.dashboard2024.index") }}" class="nav-link"> --}}
+                        <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        Dashboard Progress
                     </p>
                     </a>
                 </li>
@@ -100,7 +109,7 @@
                                 <a href="{{ route("budget.reportanggaran.index") }}" class="nav-link">
                                 <i class="nav-icon fas fa-list-alt"></i>
                                 <p>
-                                    Anggaran List
+                                    Doc List
                                 </p>
                                 </a>
                             </li>
@@ -113,13 +122,21 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route("budget.reportsemester.index") }}" class="nav-link">
+                                <i class="nav-icon fas fa-list-alt"></i>
+                                <p>
+                                    Periode Realisasi
+                                </p>
+                                </a>
+                            </li>
+                            {{-- <li class="nav-item">
                                 <a href="{{ route("budget.reportkumulatif.index") }}" class="nav-link">
                                 <i class="nav-icon fas fa-list-alt"></i>
                                 <p>
                                     Kumulatif Periode
                                 </p>
                                 </a>
-                            </li>  
+                            </li>   --}}
                             <li class="nav-item">
                                 <a href="{{ route("budget.reportperbulan.index") }}" class="nav-link">
                                 <i class="nav-icon fas fa-list-alt"></i>

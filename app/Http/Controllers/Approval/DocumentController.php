@@ -1417,7 +1417,7 @@ else A.no_document end as no_document,
         if ($jmlcar > 75) {
             return response()->json(['errors' => 'nama file jangan panjang - panjang.']);
         }
-        if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $filename)) {
+        if (preg_match('/[\'^£$%&*()}{@#~?><>,|=+¬]/', $filename)) {
             return response()->json(['errors' => 'nama file tidak boleh mengandung spesial karakter']);
         }
 

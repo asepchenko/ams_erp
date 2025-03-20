@@ -41,10 +41,6 @@
                     <div class="col-sm-8">
                     <select class="form-control" name="periode" id="periode">
                         <option value="all">1 Tahun</option>
-                        <option value="q1" {{ ( $periode == "q1") ? 'selected' : '' }}>Kuartal I</option>
-                        <option value="q2" {{ ( $periode == "q2") ? 'selected' : '' }}>Kuartal II</option>
-                        <option value="q3" {{ ( $periode == "q3") ? 'selected' : '' }}>Kuartal III</option>
-                        <option value="q4" {{ ( $periode == "q4") ? 'selected' : '' }}>Kuartal IV</option>
                         <option value="semester1" {{ ( $periode == "semester1") ? 'selected' : '' }}>Semester 1</option>
                         <option value="semester2" {{ ( $periode == "semester2") ? 'selected' : '' }}>Semester 2</option>
                     </select>

@@ -64,9 +64,9 @@ class ReportRealisasiController extends Controller
         //$where .= " and bulan=".$bulan."";
         if ($tahun == "now") {
             $tahun = date("Y");
-            $where .= " and a.tahun = year(getdate())";
+            $where .= " and a.[year] = year(getdate())";
         } else {
-            $where .= " and a.tahun = '" . $tahun . "'";
+            $where .= " and a.[year] = '" . $tahun . "'";
         }
 
         if (\Gate::allows('budget_access_special') and $kodegroup == 'all') {
@@ -78,40 +78,8 @@ class ReportRealisasiController extends Controller
         } else {
             $where .= ' and a.kode_group = \'' . $kodegroup . '\'';
         }
-        if ($tahun == '2023') {
-            $query = " select a.*, Total_realisasi = a.January + a.February + a.March + a.April + a.May + a.June + a.July + a.August + a.September + a.October + a.November + a.December from 
-            (select a.kode_group,a.descanggaran,
-            January = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 1),
-            February = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 2),
-            March = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 3),
-            April = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 4),
-            May = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 5),
-            June = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 6),
-            July = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 7),
-            August = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 8),
-            September = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 9),
-            October = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 10),
-            November = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 11),
-            December = (select isnull(sum(z.pemakaian),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bln_realisasi = 12),tahun, thn_buat, 
-            Total_budget = (select total_budget from BUDGET.dbo.tr_budget z where z.budget_id = a.budget_id)
-            from approval.dbo.v_document_budget a
-            where  a.last_status in ('closed') " . $where . "
-            group by a.kode_group, a.budget_id, a.descanggaran, a.tahun, a.thn_buat ) a order by a.kode_group, a.descanggaran";
-        } else {
-            $query = " select a.*, Total_realisasi = a.January + a.February + a.March + a.April + a.May + a.June + a.July + a.August + a.September + a.October + a.November + a.December from 
-            (select a.kode_group,a.descanggaran,
+        $query = " select a.*, Total_realisasi = a.January + a.February + a.March + a.April + a.May + a.June + a.July + a.August + a.September + a.October + a.November + a.December from 
+            (select a.kode_group,a.description,
             January = (select isnull(sum(z.jumlah_vm),0) from approval.dbo.v_document_budget z where  last_status in 
             ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bulan = 1 and created_by != 'open budget' and document_type not in ('kbr')),
             February = (select isnull(sum(z.jumlah_vm),0) from approval.dbo.v_document_budget z where  last_status in 
@@ -135,13 +103,14 @@ class ReportRealisasiController extends Controller
             November = (select isnull(sum(z.jumlah_vm),0) from approval.dbo.v_document_budget z where  last_status in 
             ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bulan = 11 and created_by != 'open budget' and document_type not in ('kbr')),
             December = (select isnull(sum(z.jumlah_vm),0) from approval.dbo.v_document_budget z where  last_status in 
-            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bulan = 12 and created_by != 'open budget' and document_type not in ('kbr')),tahun, thn_buat, 
+            ('closed') and a.kode_group = z.kode_group and a.budget_id = z.budget_id and  z.bulan = 12 and created_by != 'open budget' and document_type not in ('kbr')), 
 			Ori_budget = (select sum(z.nilai_request) from BUDGET.dbo.tr_budget_request z where z.budget_id = a.budget_id),	
-            Total_budget = (select total_budget from BUDGET.dbo.tr_budget_new z where z.budget_id = a.budget_id)
-            from approval.dbo.v_document_budget a
-            where  a.last_status in ('closed') and created_by != 'open budget'  " . $where . "
-            group by a.kode_group, a.budget_id, a.descanggaran, a.tahun, a.thn_buat ) a order by a.kode_group, a.descanggaran";
-        }
+            Total_budget = (select total_budget from BUDGET.dbo.tr_budget_new z where z.budget_id = a.budget_id), a.[year]
+            from BUDGET.dbo.tr_budget_new a
+            where 1=1 " . $where . "
+            group by a.kode_group, a.budget_id, a.description, a.[year]) a order by a.kode_group, a.description";
+
+
 
         //dd($query);
         $datanya = DB::select($query);

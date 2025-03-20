@@ -1200,7 +1200,7 @@ class DashboardNewController extends Controller
         $label_vm = "[" . str_replace('.', '', $label_vm) . "]";
         $data_vm = "[" . str_replace('.', '', $data_vm) . "]";
 
-        return view('budget.dashboard.index', compact(
+        return view('budget.dashboard2024.index', compact(
             'nik',
             'name',
             'chart_label',

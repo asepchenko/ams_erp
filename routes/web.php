@@ -192,8 +192,8 @@ Route::group(['prefix' => 'finance', 'as' => 'finance.', 'namespace' => 'Finance
 
 //Aplikasi SAP (System Anggaran Perusahaan)
 Route::group(['prefix' => 'budget', 'as' => 'budget.', 'namespace' => 'Budget', 'middleware' => ['auth']], function () {
-    Route::resource('dashboard', 'DashboardController');
-    Route::get('dashboard/search/{periode}/{tahun}', 'DashboardController@searchdata');
+    Route::resource('dashboard', 'BudgetController');
+    Route::get('dashboard/search/{periode}/{tahun}', 'DashboardNewController@searchdata');
 
     Route::resource('dashboard2024', 'DashboardNewController');
     Route::get('dashboard2024/search/{periode}/{tahun}', 'DashboardNewController@searchdata');
@@ -222,8 +222,7 @@ Route::group(['prefix' => 'budget', 'as' => 'budget.', 'namespace' => 'Budget', 
     // Route::resource('openkuartal', 'OpenkuartalController');
 
     Route::resource('reportanggaran', 'ReportanggaranController');
-    Route::get('reportanggaran/search/{tahun}/{group}', 'ReportanggaranController@searchData');
-    Route::get('reportanggaran/printpdf/{tahun}/{group}', 'ReportanggaranController@PrintPdf');
+    Route::get('reportanggaran/search/{bulan}/{brand}/{group}', 'ReportanggaranController@searchData');
 
     Route::resource('reportrealisasi', 'ReportRealisasiController');
     Route::get('reportrealisasi/search/{tahun}/{group}', 'ReportRealisasiController@searchData');
@@ -241,6 +240,9 @@ Route::group(['prefix' => 'budget', 'as' => 'budget.', 'namespace' => 'Budget', 
 
     Route::resource('reportkumulatif', 'ReportkumulatifController');
     Route::get('reportkumulatif/search/{start_period}/{end_period}/{tahun}/{group}', 'ReportkumulatifController@searchData');
+
+    Route::resource('reportsemester', 'ReportSemesterController');
+    Route::get('reportsemester/search/{periode}/{tahun}/{type}/{group}/{brand}', 'ReportSemesterController@searchData');
 
 
     Route::resource('reportperbulan', 'ReportperbulanController');
