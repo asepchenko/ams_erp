@@ -242,7 +242,7 @@ Route::group(['prefix' => 'budget', 'as' => 'budget.', 'namespace' => 'Budget', 
     Route::get('reportkumulatif/search/{start_period}/{end_period}/{tahun}/{group}', 'ReportkumulatifController@searchData');
 
     Route::resource('reportsemester', 'ReportSemesterController');
-    Route::get('reportsemester/search/{periode}/{tahun}/{type}/{group}/{brand}', 'ReportSemesterController@searchData');
+    Route::get('reportsemester/search/{periode}/{tahun}/{group}/{brand}', 'ReportSemesterController@searchData');
 
 
     Route::resource('reportperbulan', 'ReportperbulanController');

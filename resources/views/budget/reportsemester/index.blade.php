@@ -5,7 +5,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-8">
-                <h1 class="m-0 text-dark">Report Periode Kumulatif </h1>
+                <h1 class="m-0 text-dark">Report Periode Dept </h1>
             </div><!-- /.col -->
             <div class="col-sm-4">
                 <ol class="breadcrumb float-sm-right">
@@ -72,20 +72,7 @@
                 </div> <!-- div col-4-->
             </div>
             <div class="row">
-                <div class="col-md-4">
-                    <form class="form-horizontal">                        
-                        <div class="form-group row">
-                            <label for="type_budget" class="col-sm-4 col-form-label">Type Budget</label>
-                            <div class="col-sm-8">
-                                <select class="form-control" name="type_budget" id="type_budget">
-                                    <option value="ori" {{ ( $type_budget == "ori") ? 'selected' : '' }}>Original</option>
-                                    <option value="75" {{ ( $type_budget == "75") ? 'selected' : '' }}>75%</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div> <!-- div col-4-->
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <form class="form-horizontal">                        
                         <div class="form-group row">
                             <label for="group" class="col-sm-4 col-form-label">Group</label>
@@ -99,7 +86,7 @@
                         </div>
                     </form>
                 </div> <!-- div col-4-->
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <form class="form-horizontal">
                         <div class="form-group row">
                             <label for="brand" class="col-sm-4 col-form-label">Brand</label>
@@ -137,13 +124,23 @@
                     <table id="table_data" class="cell-border" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Kode Group</th>
-                                <th>Deskripsi</th>
-                                <th>Budget</th>
-                                <th>Progress</th>
-                                <th>Realisasi</th>
+                                <th rowspan="2">Kode Group</th>
+                                <th rowspan="2">Deskripsi</th>
+                                <th colspan="2" style="text-align:center;" >Budget {{ $periode }}</th>
+                                <th colspan="4" style="text-align:center;">Realisasi</th>
+                                <th colspan="4" style="text-align:center;">Progress</th>
+                            </tr>
+                            <tr>
+                                <th>100%</th>
+                                <th>85%</th>
+                                <th>Jumlah</th>
                                 <th>Sisa</th>
-                                <th>Serapan (%)</th>
+                                <th>Serapan</th>
+                                <th>Kontribusi</th>
+                                <th>Jumlah</th>
+                                <th>Sisa</th>
+                                <th>Serapan</th>
+                                <th>Kontribusi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,7 +149,26 @@
                             @endphp
                             @foreach ($datanya as $data)
                             @php
-                                $sisa = $data->jum_budget - ($data->progress + $data->jum_real);
+                                $budreal = $data->jum_real;
+                                $sisareal = $data->budget_85 - $data->jum_real;
+                                if($data->budget_85 > 0){
+                                    $serreal = ($data->jum_real / $data->budget_85) * 100;
+                                }
+                                else{
+                                    $serreal = 0;
+                                }
+                                
+                                $konreal = ($budreal / $totalreal)*100;
+
+                                $budprog = $data->progress;
+                                $sisaprog = $sisareal - $data->progress;
+                                if($sisareal > 0){
+                                    $serprog = ($data->progress / $sisareal) * 100;
+                                }else{
+                                    $serprog = 0;
+                                }
+                                
+                                $konprog = ($budprog/$totalprogress)*100;
                             @endphp
                             @if ($loop->index > 0 && $current_kode_group != $data->kode_group)
                             {{-- @include ('budget.reportsemester.subtotal', compact('datanya', 'current_kode_group')) --}}
@@ -163,18 +179,20 @@
                                 <td>{{ $data->kode_group }}</td>
                                 <td>{{ $data->keterangan }}</td>
                                 <td> {{ number_format($data->jum_budget,0) }}</td>
+                                <td> {{ number_format($data->budget_85,0) }}</td>
+                                <td><b> {{ number_format($budreal,0) }}<b></td>
+                                <td><b> {{ number_format($sisareal,0) }}<b></td>
+                                <td><b> {{ number_format($serreal,1) }}%<b></td>
+                                <td><b> {{ number_format($konreal,1) }}%<b></td>
+                                <td><b> {{ number_format($budprog,0) }}<b></td>
+                                <td><b> {{ number_format($sisaprog,0) }}<b></td>
+                                <td><b> {{ number_format($serprog,1) }}%<b></td>
+                                <td><b> {{ number_format($konprog,1) }}%<b></td>
                                 {{-- <td><b><a href="{{url('budget/reportperbulan')}}/search/{{ strtolower($data->periode) }}/{{ $tahun }}/{{ $current_kode_group }}"
                                 style="color:black" target="_blank"> {{ number_format($data->progress,0) }}</a><b></td>
                                     <td><b><a href="{{url('budget/reportperbulan')}}/search/{{ strtolower($data->periode) }}/{{ $tahun }}/{{ $current_kode_group }}"
                                                 style="color:black" target="_blank"> {{ number_format($data->jum_real,0) }}</a><b></td> --}}
-                                    <td><b>{{ number_format($data->progress,0) }}<b></td>
-                                    <td><b> {{ number_format($data->jum_real,0) }}<b></td>
-                                    <td> {{ ($sisa < 0 ? "(".number_format(abs($sisa),0).")" : number_format($sisa,0)) }}</td>
-                                    @if($data->jum_budget > 0)
-                                    <td> {{ number_format(($data->jum_real/$data->jum_budget)*100,2) }}%</td>
-                                    @else
-                                    <td>0</td>
-                                    @endif
+                                
                             </tr>
                             @if ($loop->last)
                             {{-- @include ('budget.reportsemester.subtotal', compact('datanya', 'current_kode_group')) --}}
@@ -311,11 +329,10 @@
             var end_period = $("#end_period option:selected").val();
             var group = $("#group option:selected").val();
             var tahun = $("#tahun option:selected").val();
-            var type_budget = $("#type_budget option:selected").val();
             var brand = $("#brand option:selected").val();
 
             spinner.show();
-            window.location.href = "{{ url('budget/reportsemester') }}" + "/search/" + start_period + "/" + tahun + "/" + type_budget + "/" + group + "/" + brand + "";
+            window.location.href = "{{ url('budget/reportsemester') }}" + "/search/" + start_period + "/" + tahun + "/" + group + "/" + brand + "";
         });
 
 
